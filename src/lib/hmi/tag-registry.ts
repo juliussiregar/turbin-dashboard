@@ -77,5 +77,11 @@ export function resolveSensorTag(tags: HmiTagMap, tagId: string): ResolvedSensor
 
 /** Merge patch tag dari offline sender / websocket tanpa mengganti tag lain. */
 export function applyTagPatch(current: HmiTagMap, patch: Partial<HmiTagMap>): HmiTagMap {
-  return { ...current, ...patch };
+  const next: HmiTagMap = { ...current };
+  for (const [key, value] of Object.entries(patch)) {
+    if (value !== undefined) {
+      next[key] = value;
+    }
+  }
+  return next;
 }

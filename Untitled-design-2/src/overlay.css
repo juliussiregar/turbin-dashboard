@@ -1,0 +1,8 @@
+@keyframes hmi-fan-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hmi-fan-spin {
+  animation: hmi-fan-rotate 0.6s linear infinite;
+}

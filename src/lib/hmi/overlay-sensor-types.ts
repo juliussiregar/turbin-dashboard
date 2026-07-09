@@ -1,0 +1,46 @@
+/** Display values rendered in SolidBox / PctBox. */
+export type HmiOverlayDisplayValue = string;
+
+export type HmiSensorState = {
+  te0057: HmiOverlayDisplayValue;
+  te0021: HmiOverlayDisplayValue;
+  te0022: HmiOverlayDisplayValue;
+  pt0183: HmiOverlayDisplayValue;
+  te0023: HmiOverlayDisplayValue;
+  gen_kv: HmiOverlayDisplayValue;
+  gen_pf: HmiOverlayDisplayValue;
+  gen_mvar: HmiOverlayDisplayValue;
+  gen_mva: HmiOverlayDisplayValue;
+  gen_f: HmiOverlayDisplayValue;
+  bus_f: HmiOverlayDisplayValue;
+  te0079: HmiOverlayDisplayValue;
+  te0080: HmiOverlayDisplayValue;
+  te0082: HmiOverlayDisplayValue;
+  te0081: HmiOverlayDisplayValue;
+  vigv: HmiOverlayDisplayValue;
+  vbv: HmiOverlayDisplayValue;
+  vsv: HmiOverlayDisplayValue;
+  dmd1: HmiOverlayDisplayValue;
+  fb1: HmiOverlayDisplayValue;
+  dmd2: HmiOverlayDisplayValue;
+  fb2: HmiOverlayDisplayValue;
+  dmd: HmiOverlayDisplayValue;
+  dmd3: HmiOverlayDisplayValue;
+  fb3: HmiOverlayDisplayValue;
+  mot0109: boolean;
+  mot0108b: boolean;
+  mot0108a: boolean;
+  mot0085: boolean;
+  mot0129: boolean;
+  mot2100: boolean;
+  motNox: boolean;
+  motNox2: boolean;
+  sov2110: boolean;
+  vGas1: boolean;
+  vGas2: boolean;
+  vGas3: boolean;
+  vGas4: boolean;
+  vGas6: boolean;
+  fcv2019: boolean;
+  mot6015: boolean;
+};

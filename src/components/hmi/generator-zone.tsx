@@ -20,8 +20,8 @@ function num(tags: HmiTagMap | undefined, key: string, fallback: number, digits 
 function motorRunning(tags: HmiTagMap | undefined, tagId: string, fallback: boolean) {
   const v = tags?.[tagId];
   if (typeof v === "boolean") return v;
-  if (v === "RUN" || v === true) return true;
-  if (v === "STOP" || v === false) return false;
+  if (v === "RUN") return true;
+  if (v === "STOP") return false;
   return fallback;
 }
 

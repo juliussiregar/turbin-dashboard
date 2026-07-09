@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import type { SimulationState } from "@/lib/hmi/simulation";
 import {
   ActionButton,
@@ -11,7 +12,8 @@ import {
   Panel,
   StatusPill,
 } from "@/components/hmi/dashboard-ui";
-import { ProcessDiagram } from "@/components/hmi/process-diagram";
+import { HmiOverlay } from "@/components/hmi/overlay";
+import { buildOverlaySensorState } from "@/lib/hmi/overlay-sensor-state";
 
 const NAV_ITEMS = [
   "Previous Screen",
@@ -110,6 +112,7 @@ type MainScreenProps = {
 export function MainScreen({ sim, onRaise, onLower, onTripReset }: MainScreenProps) {
   const tags = sim.tags;
   const isRun = String(tags.RUN_STATUS) === "RUN";
+  const overlayState = useMemo(() => buildOverlaySensorState(tags), [tags]);
 
   return (
     <div className="grid h-full min-h-0 grid-cols-[1fr_118px] gap-2 p-2">
@@ -117,7 +120,7 @@ export function MainScreen({ sim, onRaise, onLower, onTripReset }: MainScreenPro
         {/* Upper: process + data panels */}
         <div className="grid min-h-0 grid-cols-[1fr_272px] gap-2">
           <div className="min-h-0 overflow-hidden rounded-md border border-slate-700/60 shadow-lg">
-            <ProcessDiagram />
+            <HmiOverlay s={overlayState} />
           </div>
 
           <div className="grid min-h-0 grid-rows-6 gap-1.5">

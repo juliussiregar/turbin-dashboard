@@ -1,0 +1,433 @@
+{
+  "canvas": {
+    "width": 1024,
+    "height": 576
+  },
+  "elements": [
+    {
+      "id": "te0057",
+      "type": "sensor",
+      "top": 162,
+      "left": 30,
+      "w": 89,
+      "val": "153.8",
+      "h": 29
+    },
+    {
+      "id": "te0021",
+      "type": "sensor",
+      "top": 226,
+      "left": 31,
+      "w": 90,
+      "val": "175.8",
+      "h": 30
+    },
+    {
+      "id": "te0022",
+      "type": "sensor",
+      "top": 290,
+      "left": 31,
+      "w": 90,
+      "val": "143.6",
+      "h": 29
+    },
+    {
+      "id": "pt0183",
+      "type": "sensor",
+      "top": 363,
+      "left": 32,
+      "w": 101,
+      "val": "28.9",
+      "h": 29
+    },
+    {
+      "id": "te0023",
+      "type": "sensor",
+      "top": 119,
+      "left": 287,
+      "w": 90,
+      "val": "169.5",
+      "h": 30
+    },
+    {
+      "id": "gen_kv",
+      "type": "sensor",
+      "top": 233,
+      "left": 194,
+      "w": 73,
+      "val": "11.8",
+      "h": 22
+    },
+    {
+      "id": "gen_pf",
+      "type": "sensor",
+      "top": 254,
+      "left": 194,
+      "w": 73,
+      "val": "0.93",
+      "h": 25
+    },
+    {
+      "id": "gen_mvar",
+      "type": "sensor",
+      "top": 279,
+      "left": 194,
+      "w": 73,
+      "val": "10.0",
+      "h": 26
+    },
+    {
+      "id": "gen_mva",
+      "type": "sensor",
+      "top": 303,
+      "left": 194,
+      "w": 73,
+      "val": "27.1",
+      "h": 25
+    },
+    {
+      "id": "gen_f",
+      "type": "sensor",
+      "top": 328,
+      "left": 194,
+      "w": 73,
+      "val": "49.8",
+      "h": 25
+    },
+    {
+      "id": "bus_f",
+      "type": "sensor",
+      "top": 353,
+      "left": 194,
+      "w": 73,
+      "val": "49.9",
+      "h": 23
+    },
+    {
+      "id": "mot0109",
+      "type": "status",
+      "top": 457,
+      "left": 137,
+      "w": 60,
+      "val": "STOP",
+      "isRed": false,
+      "h": 20
+    },
+    {
+      "id": "mot0108b",
+      "type": "status",
+      "top": 457,
+      "left": 197,
+      "w": 60,
+      "val": "STOP",
+      "isRed": false,
+      "h": 20
+    },
+    {
+      "id": "mot0108a",
+      "type": "status",
+      "top": 457,
+      "left": 257,
+      "w": 60,
+      "val": "RUN",
+      "isRed": true,
+      "h": 20
+    },
+    {
+      "id": "mot0085",
+      "type": "status",
+      "top": 476,
+      "left": 326,
+      "w": 60,
+      "val": "STOP",
+      "isRed": false,
+      "h": 20
+    },
+    {
+      "id": "te0079",
+      "type": "sensor",
+      "top": 202,
+      "left": 408,
+      "w": 86,
+      "val": "174.0",
+      "h": 27
+    },
+    {
+      "id": "te0080",
+      "type": "sensor",
+      "top": 201,
+      "left": 520,
+      "w": 88,
+      "val": "180.1",
+      "h": 29
+    },
+    {
+      "id": "te0082",
+      "type": "sensor",
+      "top": 362,
+      "left": 403,
+      "w": 86,
+      "val": "167.8",
+      "h": 28
+    },
+    {
+      "id": "te0081",
+      "type": "sensor",
+      "top": 361,
+      "left": 509,
+      "w": 86,
+      "val": "171.9",
+      "h": 28
+    },
+    {
+      "id": "mot0129",
+      "type": "status",
+      "top": 306,
+      "left": 518,
+      "w": 45,
+      "val": "STOP",
+      "isRed": false,
+      "h": 20
+    },
+    {
+      "id": "mot2100",
+      "type": "status",
+      "top": 438,
+      "left": 531,
+      "w": 56,
+      "val": "STOP",
+      "isRed": false,
+      "h": 21
+    },
+    {
+      "id": "motNox",
+      "type": "status",
+      "top": 444,
+      "left": 712,
+      "w": 55,
+      "val": "STOP",
+      "isRed": false,
+      "h": 20
+    },
+    {
+      "id": "motNox2",
+      "type": "status",
+      "top": 503,
+      "left": 712,
+      "w": 55,
+      "val": "STOP",
+      "isRed": false,
+      "h": 22
+    },
+    {
+      "id": "sov2110",
+      "type": "status",
+      "top": 412,
+      "left": 575,
+      "w": 46,
+      "val": "CLS",
+      "isRed": false,
+      "h": 20
+    },
+    {
+      "id": "vigv",
+      "type": "sensor",
+      "top": 387,
+      "left": 676,
+      "w": 45,
+      "val": "29.0",
+      "h": 23
+    },
+    {
+      "id": "vbv",
+      "type": "sensor",
+      "top": 365,
+      "left": 729,
+      "w": 48,
+      "val": "41.9",
+      "h": 23
+    },
+    {
+      "id": "vsv",
+      "type": "sensor",
+      "top": 363,
+      "left": 788,
+      "w": 45,
+      "val": "78.8",
+      "h": 25
+    },
+    {
+      "id": "vGas1",
+      "type": "status",
+      "top": 146,
+      "left": 511,
+      "w": 45,
+      "val": "OPN",
+      "isRed": true,
+      "h": 20
+    },
+    {
+      "id": "vGas2",
+      "type": "status",
+      "top": 144,
+      "left": 606,
+      "w": 45,
+      "val": "OPN",
+      "isRed": true,
+      "h": 20
+    },
+    {
+      "id": "vGas3",
+      "type": "status",
+      "top": 145,
+      "left": 694,
+      "w": 45,
+      "val": "OPN",
+      "isRed": true,
+      "h": 20
+    },
+    {
+      "id": "vGas4",
+      "type": "status",
+      "top": 68,
+      "left": 586,
+      "w": 45,
+      "val": "OPN",
+      "isRed": true,
+      "h": 20
+    },
+    {
+      "id": "vGas6",
+      "type": "status",
+      "top": 68,
+      "left": 676,
+      "w": 45,
+      "val": "OPN",
+      "isRed": true,
+      "h": 20
+    },
+    {
+      "id": "dmd1",
+      "type": "pct",
+      "top": 169,
+      "left": 678,
+      "w": 38,
+      "val": "18.4"
+    },
+    {
+      "id": "fb1",
+      "type": "pct",
+      "top": 184,
+      "left": 678,
+      "w": 38,
+      "val": "18.4"
+    },
+    {
+      "id": "dmd2",
+      "type": "pct",
+      "top": 168,
+      "left": 815,
+      "w": 38,
+      "val": "31.7"
+    },
+    {
+      "id": "fb2",
+      "type": "pct",
+      "top": 183,
+      "left": 815,
+      "w": 38,
+      "val": "31.6"
+    },
+    {
+      "id": "dmd",
+      "type": "pct",
+      "top": 530,
+      "left": 820,
+      "w": 35,
+      "val": "0.0",
+      "h": 14
+    },
+    {
+      "id": "dmd3",
+      "type": "pct",
+      "top": 530,
+      "left": 820,
+      "w": 35,
+      "val": "0.0",
+      "h": 14
+    },
+    {
+      "id": "fb3",
+      "type": "pct",
+      "top": 543,
+      "left": 820,
+      "w": 35,
+      "val": "0.0",
+      "h": 14
+    },
+    {
+      "id": "fcv2019",
+      "type": "status",
+      "top": 510,
+      "left": 876,
+      "w": 38,
+      "val": "CLS",
+      "isRed": false,
+      "h": 21
+    },
+    {
+      "id": "mot6015",
+      "type": "status",
+      "top": 401,
+      "left": 869,
+      "w": 63,
+      "val": "STOP",
+      "isRed": false,
+      "h": 23
+    },
+    {
+      "id": "img_fan-red_1783583571445",
+      "type": "image",
+      "imageAsset": "fan-red",
+      "animateRotate": true,
+      "top": 65,
+      "left": 96,
+      "w": 53,
+      "h": 53,
+      "val": "Fan Merah"
+    },
+    {
+      "id": "img_fan-green_1783583721114",
+      "type": "image",
+      "imageAsset": "fan-green",
+      "animateRotate": true,
+      "top": 60,
+      "left": 156,
+      "w": 68,
+      "h": 64,
+      "val": "Fan Hijau"
+    },
+    {
+      "id": "img_fan-green_1783583754685",
+      "type": "image",
+      "imageAsset": "fan-green",
+      "animateRotate": true,
+      "top": 56,
+      "left": 938,
+      "w": 65,
+      "h": 67,
+      "val": "Fan Hijau"
+    },
+    {
+      "id": "img_fan-red_1783583756983",
+      "type": "image",
+      "imageAsset": "fan-red",
+      "animateRotate": true,
+      "top": 64,
+      "left": 875,
+      "w": 54,
+      "h": 53,
+      "val": "Fan Merah"
+    }
+  ]
+}
