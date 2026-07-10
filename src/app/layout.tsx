@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Turbine HMI Simulator",
-  description: "Multi-screen turbine HMI simulator with operation mode states",
+  title: "Voltara — Turbine Control",
+  description: "Voltara web HMI POC for gas turbine unit monitoring and control",
 };
 
 export default function RootLayout({

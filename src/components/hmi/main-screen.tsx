@@ -330,12 +330,17 @@ export function MainScreenHeader({
     >
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-white font-mono text-[10px] font-black text-slate-900">
-            GE
+          <div className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-md bg-gradient-to-br from-cyan-300 to-sky-600 shadow-[0_0_12px_rgba(34,211,238,0.35)]">
+            <span className="font-mono text-[13px] font-black leading-none tracking-tight text-slate-950">V</span>
           </div>
           <div className="min-w-0">
-            <div className="text-sm font-bold tracking-wide">SENIPAH</div>
-            <div className="text-[10px] text-slate-400">Gas Turbine Control · Unit 2</div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-sm font-black tracking-[0.14em] text-white">VOLTARA</span>
+              <span className="rounded border border-cyan-500/30 bg-cyan-500/10 px-1.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-wider text-cyan-300">
+                WEB POC
+              </span>
+            </div>
+            <div className="text-[10px] text-slate-400">Turbine Control · Unit 2</div>
           </div>
           {alarmCount > 0 || isTrip ? (
             <div className="shrink-0 rounded border border-red-500/40 bg-red-950/60 px-2 py-0.5 font-mono text-[9px] font-bold text-red-200">
