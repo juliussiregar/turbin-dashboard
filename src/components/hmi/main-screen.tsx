@@ -328,7 +328,7 @@ export function MainScreenHeader({
           : "border-slate-700/80 bg-gradient-to-r from-[#0b1524] via-[#122033] to-[#0b1524]"
       }`}
     >
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+      <div className="grid grid-cols-[1fr_auto] items-center gap-3">
         <div className="flex min-w-0 items-center gap-2.5">
           <div className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-md bg-gradient-to-br from-cyan-300 to-sky-600 shadow-[0_0_12px_rgba(34,211,238,0.35)]">
             <span className="font-mono text-[13px] font-black leading-none tracking-tight text-slate-950">V</span>
@@ -352,13 +352,6 @@ export function MainScreenHeader({
             </div>
           )}
         </div>
-
-        <button
-          type="button"
-          className="rounded-lg border border-red-400/50 bg-gradient-to-b from-red-500 to-red-700 px-6 py-1.5 text-sm font-black tracking-wider text-white shadow-[0_0_20px_rgba(239,68,68,0.35)] transition hover:from-red-400 hover:to-red-600"
-        >
-          EMERG STOP
-        </button>
 
         <div className="text-right">
           <div className="text-sm font-bold">
