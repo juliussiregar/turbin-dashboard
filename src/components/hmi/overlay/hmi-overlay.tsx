@@ -60,15 +60,15 @@ function OverlayElements({ s, overlayScale }: { s: HmiSensorState; overlayScale:
       <StatusTxt text={s.mot2100 ? "RUN" : "STOP"} top={438} left={531} w={56} h={21} fontSize={12} isRed={!!s.mot2100} />
       <StatusTxt text={s.motNox ? "RUN" : "STOP"} top={444} left={712} w={55} h={20} fontSize={12} isRed={!!s.motNox} />
       <StatusTxt text={s.motNox2 ? "RUN" : "STOP"} top={503} left={712} w={55} h={22} fontSize={12} isRed={!!s.motNox2} />
-      <StatusTxt text={s.sov2110 ? "OPN" : "CLS"} top={412} left={575} w={46} h={20} fontSize={12} isRed={!!s.sov2110} />
+      <StatusTxt text={s.sov2110 ? "OPN" : "CLS"} top={412} left={575} w={46} h={20} fontSize={12} isRed={!!s.sov2110} kind="valve" />
       <SolidBox val={s.vigv} top={387} left={676} w={45} h={23} fontSize={13} />
       <SolidBox val={s.vbv} top={365} left={729} w={48} h={23} fontSize={13} />
       <SolidBox val={s.vsv} top={363} left={788} w={45} h={25} fontSize={13} />
-      <StatusTxt text={s.vGas1 ? "OPN" : "CLS"} top={146} left={511} w={45} h={20} fontSize={12} isRed={!!s.vGas1} />
-      <StatusTxt text={s.vGas2 ? "OPN" : "CLS"} top={144} left={606} w={45} h={20} fontSize={12} isRed={!!s.vGas2} />
-      <StatusTxt text={s.vGas3 ? "OPN" : "CLS"} top={145} left={694} w={45} h={20} fontSize={12} isRed={!!s.vGas3} />
-      <StatusTxt text={s.vGas4 ? "OPN" : "CLS"} top={68} left={586} w={45} h={20} fontSize={12} isRed={!!s.vGas4} />
-      <StatusTxt text={s.vGas6 ? "OPN" : "CLS"} top={68} left={676} w={45} h={20} fontSize={12} isRed={!!s.vGas6} />
+      <StatusTxt text={s.vGas1 ? "OPN" : "CLS"} top={146} left={511} w={45} h={20} fontSize={12} isRed={!!s.vGas1} kind="valve" />
+      <StatusTxt text={s.vGas2 ? "OPN" : "CLS"} top={144} left={606} w={45} h={20} fontSize={12} isRed={!!s.vGas2} kind="valve" />
+      <StatusTxt text={s.vGas3 ? "OPN" : "CLS"} top={145} left={694} w={45} h={20} fontSize={12} isRed={!!s.vGas3} kind="valve" />
+      <StatusTxt text={s.vGas4 ? "OPN" : "CLS"} top={68} left={586} w={45} h={20} fontSize={12} isRed={!!s.vGas4} kind="valve" />
+      <StatusTxt text={s.vGas6 ? "OPN" : "CLS"} top={68} left={676} w={45} h={20} fontSize={12} isRed={!!s.vGas6} kind="valve" />
       <PctBox val={s.dmd1} top={169} left={678} w={38} />
       <PctBox val={s.fb1} top={184} left={678} w={38} />
       <PctBox val={s.dmd2} top={168} left={815} w={38} />
@@ -76,12 +76,12 @@ function OverlayElements({ s, overlayScale }: { s: HmiSensorState; overlayScale:
       <PctBox val={s.dmd} top={530} left={820} w={35} />
       <PctBox val={s.dmd3} top={530} left={820} w={35} />
       <PctBox val={s.fb3} top={543} left={820} w={35} />
-      <StatusTxt text={s.fcv2019 ? "OPN" : "CLS"} top={510} left={876} w={38} h={21} fontSize={12} isRed={!!s.fcv2019} />
+      <StatusTxt text={s.fcv2019 ? "OPN" : "CLS"} top={510} left={876} w={38} h={21} fontSize={12} isRed={!!s.fcv2019} kind="valve" />
       <StatusTxt text={s.mot6015 ? "RUN" : "STOP"} top={401} left={869} w={63} h={23} fontSize={12} isRed={!!s.mot6015} />
-      <ImageOverlay asset="fan-red" top={65} left={96} w={53} h={53} animateRotate pivotX={50} pivotY={50} />
-      <ImageOverlay asset="fan-green" top={60} left={156} w={68} h={64} animateRotate pivotX={50} pivotY={50} />
-      <ImageOverlay asset="fan-green" top={56} left={938} w={65} h={67} animateRotate pivotX={50} pivotY={50} />
-      <ImageOverlay asset="fan-red" top={64} left={875} w={54} h={53} animateRotate pivotX={50} pivotY={50} />
+      <ImageOverlay asset="fan-red" top={65} left={96} w={53} h={53} animateRotate={!!s.fan4103a} pivotX={50} pivotY={50} />
+      <ImageOverlay asset="fan-green" top={60} left={156} w={68} h={64} animateRotate={!!s.fan4103b} pivotX={50} pivotY={50} />
+      <ImageOverlay asset="fan-green" top={56} left={938} w={65} h={67} animateRotate={!!s.fan4017b} pivotX={50} pivotY={50} />
+      <ImageOverlay asset="fan-red" top={64} left={875} w={54} h={53} animateRotate={!!s.fan4017a} pivotX={50} pivotY={50} />
     </div>
   );
 }

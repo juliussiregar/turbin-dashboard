@@ -1,19 +1,37 @@
 "use client";
 
 import { useMemo } from "react";
-import type { SimulationState } from "@/lib/hmi/simulation";
 import {
   ActionButton,
-  DataLine,
+  AlarmListPanel,
+  AlarmStrip,
+  DemoBar,
   DigitalReadout,
   fmt,
   KpiChip,
+  LiveDataLine,
   NavButton,
   Panel,
-  StatusPill,
+  StatusLamp,
+  TrendCard,
 } from "@/components/hmi/dashboard-ui";
 import { HmiOverlay } from "@/components/hmi/overlay";
+import type { HmiAlarm } from "@/lib/hmi/alarms";
 import { buildOverlaySensorState } from "@/lib/hmi/overlay-sensor-state";
+import {
+  ENGINE_PANEL_ROWS,
+  FUEL_PANEL_ROWS,
+  GENERATOR_PANEL_ROWS,
+  MINERAL_PANEL_ROWS,
+  TURBINE_LUBE_PANEL_ROWS,
+  VENTILATION_PANEL_ROWS,
+  VIBRATION_PANEL_ROWS,
+  type PanelRowSpec,
+} from "@/lib/hmi/panel-tag-registry";
+import type { SimulationState } from "@/lib/hmi/simulation";
+import type { TagHistory } from "@/lib/hmi/tag-history";
+import { getTagDefinition } from "@/lib/hmi/tag-registry";
+import type { HmiTagMap } from "@/lib/hmi/types";
 
 const NAV_ITEMS = [
   "Previous Screen",
@@ -33,203 +51,226 @@ const NAV_ITEMS = [
   "Water Wash",
 ];
 
-const ENGINE_ROWS = [
-  ["N2", "100.0", "%"],
-  ["N25REF", "10810.0", "RPM"],
-  ["T3", "941.1", "°F"],
-  ["T48REF", "1662.3", "°F"],
-  ["PS3", "285.7", "psia"],
-  ["T2", "84.7", "°F"],
-  ["T48", "1662.3", "°F"],
-  ["T3REF", "941.1", "°F"],
-] as const;
-
-const MINERAL_ROWS = [
-  ["LT0135A", "72.4", "%"],
-  ["TE0057A1", "153.8", "°F"],
-  ["TE0057B1", "154.1", "°F"],
-  ["TE0057C1", "153.2", "°F"],
-  ["TE0057D1", "154.0", "°F"],
-] as const;
-
-const GENERATOR_ROWS = [
-  ["TE0021A1", "175.8", "°F"],
-  ["TE0022A1", "143.6", "°F"],
-  ["TE0023A1", "169.5", "°F"],
-  ["TE0034A1", "162.4", "°F"],
-  ["TE0035A1", "158.7", "°F"],
-  ["TE0036A1", "161.2", "°F"],
-] as const;
-
-const TURBINE_LUBE_ROWS = [
-  ["PT1021A1", "62.5", "psig"],
-  ["TE1021A1", "118.4", "°F"],
-  ["TE1022A1", "119.1", "°F"],
-  ["TE1023A1", "117.8", "°F"],
-  ["TE1024A1", "120.2", "°F"],
-] as const;
-
-const VIBRATION_ROWS = [
-  ["XE8009X", "0.42", "in/s"],
-  ["XE8009Y", "0.38", "in/s"],
-  ["XE8010X", "0.35", "in/s"],
-  ["XE8010Y", "0.31", "in/s"],
-  ["XE8077", "0.28", "in/s"],
-] as const;
-
-const FUEL_ROWS = [
-  ["WF36DMD", "18.4", "%"],
-  ["PGSSEL", "31.7", "%"],
-  ["FG1FLOW", "1240", "lb/hr"],
-  ["FG2FLOW", "0.0", "lb/hr"],
-] as const;
-
-const VENTILATION_ROWS = [
-  ["PDT4004", "0.12", "inH2O"],
-  ["TE4082A1", "142.3", "°F"],
-  ["TE4083A1", "143.1", "°F"],
-  ["PDT4005", "0.08", "inH2O"],
-  ["TE4084A1", "141.8", "°F"],
-] as const;
-
-function StaticTable({ rows }: { rows: readonly (readonly [string, string, string])[] }) {
+function LiveTable({ tags, rows }: { tags: HmiTagMap; rows: PanelRowSpec[] }) {
   return (
-    <div className="space-y-0">
-      {rows.map(([label, value, unit]) => (
-        <DataLine key={label} label={label} value={value} unit={unit} />
-      ))}
+    <div>
+      {rows.map((row) => {
+        const def = getTagDefinition(row.tagId);
+        const digits = row.digits ?? def?.decimals ?? 1;
+        return (
+          <LiveDataLine
+            key={row.tagId + row.label}
+            label={row.label}
+            value={fmt(tags[row.tagId], digits)}
+            unit={def?.unit}
+            highlight={row.highlight}
+          />
+        );
+      })}
     </div>
   );
 }
 
 type MainScreenProps = {
   sim: SimulationState;
+  history: TagHistory;
+  alarms: HmiAlarm[];
+  alarmListOpen: boolean;
+  navActive: string;
+  onNavSelect: (item: string) => void;
+  onAlarmListToggle: () => void;
+  onAlarmListClose: () => void;
+  onAck: () => void;
   onRaise: () => void;
   onLower: () => void;
   onTripReset: () => void;
 };
 
-export function MainScreen({ sim, onRaise, onLower, onTripReset }: MainScreenProps) {
+export function MainScreen({
+  sim,
+  history,
+  alarms,
+  alarmListOpen,
+  navActive,
+  onNavSelect,
+  onAlarmListToggle,
+  onAlarmListClose,
+  onAck,
+  onRaise,
+  onLower,
+  onTripReset,
+}: MainScreenProps) {
   const tags = sim.tags;
   const isRun = String(tags.RUN_STATUS) === "RUN";
   const overlayState = useMemo(() => buildOverlaySensorState(tags), [tags]);
+  const runPermissiveOk = String(tags.RUN_PERMISSIVE) === "OK";
+  const mwCtrlEnabled = String(tags.MW_CTRL_ENBL) === "ENABLED";
+  const isTrip = sim.mode === "TRIP";
 
   return (
-    <div className="grid h-full min-h-0 grid-cols-[1fr_118px] gap-2 p-2">
-      <div className="grid min-h-0 grid-rows-[1fr_172px] gap-2">
-        {/* Upper: process + data panels */}
-        <div className="grid min-h-0 grid-cols-[1fr_272px] gap-2">
-          <div className="min-h-0 overflow-hidden rounded-md border border-slate-700/60 shadow-lg">
-            <HmiOverlay s={overlayState} />
+    <div className="relative grid h-full min-h-0 grid-cols-[minmax(0,1fr)_136px] gap-2 overflow-hidden p-2">
+      <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_auto_minmax(150px,0.26fr)] gap-2 overflow-hidden">
+        {/* Process image scales to fit cell — always fully visible, no scroll */}
+        <div className="grid min-h-0 grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)] gap-2 overflow-hidden">
+          <div className="min-h-0 min-w-0 overflow-hidden rounded-md border border-slate-700/70 bg-black">
+            <HmiOverlay s={overlayState} showScaleControl={false} />
           </div>
 
-          <div className="grid min-h-0 grid-rows-6 gap-1.5">
-            <Panel title="ENGINE PARAMETERS">
-              <div className="space-y-0">
-                <DataLine label="N25" value={fmt(tags.N25, 1)} unit="RPM" highlight />
-                <DataLine label="NSD" value={fmt(tags.NSD, 1)} unit="RPM" highlight />
-                <DataLine label="PS3" value={fmt(tags.PS3, 1)} unit="psia" highlight />
-                <StaticTable rows={ENGINE_ROWS.slice(2)} />
-              </div>
-            </Panel>
-            <Panel title="MINERAL LUBE OIL">
-              <StaticTable rows={MINERAL_ROWS} />
-            </Panel>
-            <Panel title="GENERATOR">
-              <div className="space-y-0">
-                <DataLine label="MW" value={fmt(tags.MW, 1)} unit="MW" highlight />
-                <StaticTable rows={GENERATOR_ROWS} />
-              </div>
-            </Panel>
-            <Panel title="TURBINE LUBE OIL">
-              <div className="space-y-0">
-                <DataLine label="LUBE P" value={fmt(tags.LUBE_OIL_PRESS, 1)} unit="psig" highlight />
-                <StaticTable rows={TURBINE_LUBE_ROWS.slice(1)} />
-              </div>
-            </Panel>
-            <Panel title="VIBRATION">
-              <div className="space-y-0">
-                <DataLine label="VIB A" value={fmt(tags.VIB_A, 2)} unit="in/s" highlight />
-                <DataLine label="VIB B" value={fmt(tags.VIB_B, 2)} unit="in/s" highlight />
-                <StaticTable rows={VIBRATION_ROWS.slice(2)} />
-              </div>
-            </Panel>
-            <Panel title="FUEL DATA">
-              <div className="space-y-0">
-                <DataLine label="MODE" value={sim.mode} highlight />
-                <StaticTable rows={FUEL_ROWS} />
-              </div>
-            </Panel>
+          <div className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-2 overflow-hidden">
+            <div className="grid shrink-0 grid-cols-3 gap-1.5">
+              <TrendCard
+                label="MW"
+                value={fmt(tags.MW, 1)}
+                unit="MW"
+                series={history.MW}
+                stroke="#34d399"
+                domainMin={0}
+                domainMax={30}
+              />
+              <TrendCard
+                label="N25"
+                value={fmt(tags.N25, 0)}
+                unit="RPM"
+                series={history.N25}
+                stroke="#22d3ee"
+                domainMin={0}
+                domainMax={11000}
+              />
+              <TrendCard
+                label="VIB"
+                value={fmt(tags.VIB_A, 2)}
+                unit="in/s"
+                series={history.VIB_A}
+                stroke="#fbbf24"
+                domainMin={0}
+                domainMax={2}
+              />
+            </div>
+
+            <div className="grid min-h-0 grid-cols-2 grid-rows-3 gap-1.5 overflow-hidden">
+              <Panel title="ENGINE PARAMETERS" accent="cyan" compact className="min-h-0">
+                <LiveTable tags={tags} rows={ENGINE_PANEL_ROWS} />
+              </Panel>
+              <Panel title="MINERAL LUBE OIL" accent="cyan" compact className="min-h-0">
+                <LiveTable tags={tags} rows={MINERAL_PANEL_ROWS} />
+              </Panel>
+              <Panel title="GENERATOR" accent="emerald" compact className="min-h-0">
+                <LiveTable tags={tags} rows={GENERATOR_PANEL_ROWS} />
+              </Panel>
+              <Panel title="TURBINE LUBE OIL" accent="cyan" compact className="min-h-0">
+                <LiveTable tags={tags} rows={TURBINE_LUBE_PANEL_ROWS} />
+              </Panel>
+              <Panel title="VIBRATION" accent="amber" compact className="min-h-0">
+                <LiveTable tags={tags} rows={VIBRATION_PANEL_ROWS} />
+              </Panel>
+              <Panel title="FUEL DATA" accent="rose" compact className="min-h-0">
+                <LiveDataLine label="MODE" value={sim.mode} highlight />
+                <LiveTable tags={tags} rows={FUEL_PANEL_ROWS} />
+              </Panel>
+            </div>
           </div>
         </div>
 
-        {/* Bottom control row */}
-        <div className="grid min-h-0 grid-cols-4 gap-2">
-          <Panel title="SYSTEM STATUSES">
+        <AlarmStrip alarms={alarms} onAck={onAck} onOpen={onAlarmListToggle} tripActive={isTrip} />
+
+        <div className="grid min-h-0 grid-cols-4 gap-2 overflow-hidden">
+          <Panel title="SYSTEM STATUSES" accent="emerald" compact>
             <div className="grid grid-cols-2 gap-1.5">
-              <StatusPill label="NOX WATER INJ" status={String(tags.NOX_WATER_STATUS)} tone="active" />
-              <StatusPill label="RUN" status={String(tags.RUN_STATUS)} tone={isRun ? "good" : "bad"} />
-              <StatusPill label="SPRINT" status="Inactive" tone="neutral" />
-              <StatusPill label="CRANK" status="Active" tone="active" />
+              <StatusLamp
+                label="NOX WATER INJ"
+                on={String(tags.NOX_WATER_STATUS) === "Active"}
+                onLabel="Active"
+                offLabel="Inactive"
+              />
+              <StatusLamp label="RUN" on={isRun} onLabel="RUN" offLabel="STOP" invert />
+              <StatusLamp
+                label="SPRINT"
+                on={String(tags.SPRINT_STATUS) === "Active"}
+                onLabel="Active"
+                offLabel="Inactive"
+              />
+              <StatusLamp
+                label="CRANK"
+                on={String(tags.CRANK_STATUS) === "Active"}
+                onLabel="Active"
+                offLabel="Inactive"
+              />
             </div>
-            <div className="mt-2 rounded border border-emerald-500/20 bg-black/50 p-1.5 text-[9px] leading-snug text-emerald-300">
-              UNIT IN LOCAL CONTROL · SYNC ENABLED · {String(tags.SEQ_TEXT)}
+            <div
+              className={`mt-1.5 truncate rounded border px-1.5 py-1 text-[10px] ${
+                isTrip
+                  ? "border-red-500/40 bg-red-950/50 text-red-200"
+                  : "border-emerald-500/25 bg-black/50 text-emerald-300"
+              }`}
+            >
+              LOCAL · SYNC · {String(tags.SEQ_TEXT)}
             </div>
           </Panel>
 
-          <Panel title="EXCITER / AVR">
-            <div className="space-y-2">
-              <DataLine label="Exciter Amps" value="3.40" />
-              <DataLine label="Exciter Volts" value="24.13" unit="VDC" />
+          <Panel title="EXCITER / AVR" accent="cyan" compact>
+            <LiveDataLine label="Exciter Amps" value={fmt(tags.EXCITER_AMPS, 2)} unit="A" highlight />
+            <LiveDataLine label="Exciter Volts" value={fmt(tags.EXCITER_VOLTS, 2)} unit="VDC" highlight />
+            <div className="mt-2">
               <ActionButton label="AVR CONTROL" variant="ghost" />
             </div>
           </Panel>
 
-          <Panel title="MW CONTROL">
+          <Panel title="MW CONTROL" accent="emerald" compact>
             <div className="grid grid-cols-[1fr_auto] gap-2">
               <DigitalReadout label="MW OUTPUT" value={fmt(tags.MW, 2)} unit="MW" />
               <div className="flex flex-col gap-1">
-                <ActionButton label="RAISE" onClick={onRaise} />
-                <ActionButton label="LOWER" onClick={onLower} />
+                <ActionButton label="RAISE" onClick={onRaise} disabled={!mwCtrlEnabled} />
+                <ActionButton label="LOWER" onClick={onLower} disabled={!mwCtrlEnabled} />
               </div>
             </div>
-            <div className="mt-2 space-y-1">
-              <DataLine label="NSD REF" value={fmt(tags.NSDREF, 2)} unit="RPM" highlight />
-              <DataLine label="MW SETPOINT" value={fmt(tags.MW_SP, 2)} unit="MW" highlight />
+            <div className="mt-1">
+              <LiveDataLine label="NSD REF" value={fmt(tags.NSDREF, 2)} unit="RPM" highlight />
+              <LiveDataLine label="MW SETPOINT" value={fmt(tags.MW_SP, 2)} unit="MW" highlight />
             </div>
-            <div className="mt-2 grid grid-cols-2 gap-1">
-              <StatusPill label="RUN PERMISSIVE" status="NOT OK" tone="bad" />
-              <StatusPill label="MW CTRL ENBL" status="ENABLED" tone="good" />
+            <div className="mt-1 grid grid-cols-2 gap-1.5">
+              <StatusLamp label="RUN PERMISSIVE" on={runPermissiveOk} onLabel="OK" offLabel="NOT OK" />
+              <StatusLamp label="MW CTRL" on={mwCtrlEnabled} onLabel="ENABLED" offLabel="DISABLED" />
             </div>
           </Panel>
 
-          <Panel title="SHUTDOWN / VENTILATION">
+          <Panel title="SHUTDOWN / VENTILATION" accent={isTrip ? "rose" : "cyan"} compact>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <div className="mb-1 text-[8px] font-bold uppercase text-slate-500">Shutdown Flags</div>
-                {["ESN", "ES", "SI", "DM", "NSD"].map((flag) => (
-                  <div key={flag} className="text-[9px] text-sky-400">
-                    {flag} Flag
-                  </div>
-                ))}
+                <div className="mb-1 text-[9px] font-bold uppercase tracking-wide text-slate-500">Shutdown</div>
+                <div className="space-y-0.5">
+                  {["ESN", "ES", "SI", "DM", "NSD"].map((flag) => {
+                    const active = isTrip && (flag === "ES" || flag === "ESN");
+                    return (
+                      <div
+                        key={flag}
+                        className={`flex items-center gap-1.5 text-[10px] ${
+                          active ? "font-bold text-red-300" : "text-sky-400"
+                        }`}
+                      >
+                        <span className={`h-1.5 w-1.5 rounded-full ${active ? "bg-red-500" : "bg-slate-600"}`} />
+                        {flag}
+                        {active ? " · ACT" : ""}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
               <div>
-                <div className="mb-1 text-[8px] font-bold uppercase text-slate-500">Ventilation</div>
-                <StaticTable rows={VENTILATION_ROWS} />
+                <div className="mb-1 text-[9px] font-bold uppercase tracking-wide text-slate-500">Vent</div>
+                <LiveTable tags={tags} rows={VENTILATION_PANEL_ROWS} />
               </div>
             </div>
           </Panel>
         </div>
       </div>
 
-      {/* Navigation rail */}
-      <aside className="flex min-h-0 flex-col rounded-md border border-teal-500/30 bg-gradient-to-b from-teal-900/90 via-teal-950/95 to-slate-950 p-1.5 shadow-lg">
-        <div className="mb-1.5 grid grid-cols-2 gap-0.5">
+      <aside className="flex min-h-0 flex-col overflow-hidden rounded-md border border-teal-500/35 bg-gradient-to-b from-[#0d3d42] via-[#0a2a30] to-[#071018] p-1.5">
+        <div className="mb-1.5 grid shrink-0 grid-cols-2 gap-0.5">
           {["CONTROL", "SYSTEMS", "MISC", "VG CAL"].map((tab, i) => (
             <button
               key={tab}
               type="button"
-              className={`rounded px-1 py-0.5 text-[7px] font-bold ${
+              className={`rounded px-0.5 py-0.5 text-[7px] font-bold ${
                 i === 0 ? "bg-cyan-500/25 text-cyan-100" : "bg-slate-800/50 text-slate-400"
               }`}
             >
@@ -237,40 +278,74 @@ export function MainScreen({ sim, onRaise, onLower, onTripReset }: MainScreenPro
             </button>
           ))}
         </div>
-        <div className="mb-1 rounded border border-cyan-400/30 bg-cyan-500/10 py-1 text-center text-[9px] font-bold text-cyan-100">
+        <div className="mb-1.5 shrink-0 rounded border border-cyan-400/30 bg-cyan-500/10 py-1 text-center text-[9px] font-bold text-cyan-100">
           MAIN SCREEN
         </div>
-        <div className="min-h-0 flex-1 space-y-0.5 overflow-y-auto pr-0.5">
-          {NAV_ITEMS.map((item, i) => (
-            <NavButton key={item} label={item} active={i === 0} />
+        <div className="grid min-h-0 flex-1 grid-rows-[repeat(15,minmax(0,1fr))] gap-0.5 overflow-hidden">
+          {NAV_ITEMS.map((item) => (
+            <NavButton key={item} label={item} active={navActive === item} onClick={() => onNavSelect(item)} />
           ))}
         </div>
-        <div className="mt-1.5 space-y-0.5 border-t border-teal-500/20 pt-1.5">
+        <div className="mt-1.5 grid shrink-0 grid-cols-2 gap-0.5 border-t border-teal-500/20 pt-1.5">
           <ActionButton label="PRINT" variant="ghost" />
-          <ActionButton label="Alarms" variant="ghost" />
-          <ActionButton label="Ack" variant="ghost" />
-          <ActionButton label="Reset" onClick={onTripReset} variant="danger" />
+          <ActionButton label="Alarms" variant="ghost" onClick={onAlarmListToggle} />
+          <ActionButton label="Ack" variant="ghost" onClick={onAck} />
+          <ActionButton label="Reset" onClick={onTripReset} variant="danger" emphasize={isTrip} />
         </div>
       </aside>
+
+      <AlarmListPanel alarms={alarms} open={alarmListOpen} onClose={onAlarmListClose} />
     </div>
   );
 }
 
-export function MainScreenHeader({ sim, clock }: { sim: SimulationState; clock: string }) {
+export function MainScreenHeader({
+  sim,
+  clock,
+  history,
+  alarmCount,
+  onStartSeq,
+  onForceTrip,
+  onDemoReset,
+}: {
+  sim: SimulationState;
+  clock: string;
+  history: TagHistory;
+  alarmCount: number;
+  onStartSeq: () => void;
+  onForceTrip: () => void;
+  onDemoReset: () => void;
+}) {
   const tags = sim.tags;
   const today = new Date().toLocaleDateString();
+  const isTrip = sim.mode === "TRIP";
 
   return (
-    <header className="border-b border-slate-700/80 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-3 py-1.5 text-slate-100 shadow-lg">
+    <header
+      className={`relative z-20 shrink-0 overflow-visible border-b px-3 py-2 text-slate-100 ${
+        isTrip
+          ? "border-red-500/50 bg-gradient-to-r from-red-950/80 via-[#122033] to-red-950/60"
+          : "border-slate-700/80 bg-gradient-to-r from-[#0b1524] via-[#122033] to-[#0b1524]"
+      }`}
+    >
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-white text-[10px] font-black text-slate-900">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-white font-mono text-[10px] font-black text-slate-900">
             GE
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="text-sm font-bold tracking-wide">SENIPAH</div>
-            <div className="text-[10px] text-slate-400">Gas Turbine Control</div>
+            <div className="text-[10px] text-slate-400">Gas Turbine Control · Unit 2</div>
           </div>
+          {alarmCount > 0 || isTrip ? (
+            <div className="shrink-0 rounded border border-red-500/40 bg-red-950/60 px-2 py-0.5 font-mono text-[9px] font-bold text-red-200">
+              {isTrip ? "TRIP" : `${alarmCount} ACTIVE`}
+            </div>
+          ) : (
+            <div className="shrink-0 rounded border border-emerald-500/25 bg-emerald-950/40 px-2 py-0.5 font-mono text-[9px] font-bold text-emerald-300">
+              NORMAL
+            </div>
+          )}
         </div>
 
         <button
@@ -282,39 +357,77 @@ export function MainScreenHeader({ sim, clock }: { sim: SimulationState; clock: 
 
         <div className="text-right">
           <div className="text-sm font-bold">
-            MAIN SCREEN <span className="text-slate-500">|</span> UNIT 2
+            MAIN SCREEN <span className="text-slate-500">|</span>{" "}
+            <span className={`font-mono ${isTrip ? "text-red-300" : "text-cyan-200"}`}>{sim.mode}</span>
           </div>
-          <div className="font-mono text-[11px] text-cyan-300">
+          <div className="font-mono text-[11px] tabular-nums text-cyan-300">
             {clock} <span className="text-slate-500">|</span> {today}
           </div>
         </div>
       </div>
 
-      <div className="mt-2 grid grid-cols-2 gap-2 text-[10px]">
-        <div className="rounded border border-sky-500/20 bg-sky-500/10 px-2 py-1 font-semibold text-sky-300">
+      <div className="mt-2 grid grid-cols-[auto_1fr_1fr_200px] items-center gap-2 text-[11px]">
+        <DemoBar onStart={onStartSeq} onTrip={onForceTrip} onReset={onDemoReset} tripActive={isTrip} />
+        <div className="truncate rounded border border-sky-500/20 bg-sky-500/10 px-2.5 py-1.5 font-semibold text-sky-300">
           REGULATOR: NSDPRX — NSD Regulator
         </div>
-        <div className="rounded border border-sky-500/20 bg-sky-500/10 px-2 py-1 text-right font-semibold text-sky-300">
+        <div
+          className={`truncate rounded border px-2.5 py-1.5 text-right font-semibold ${
+            isTrip
+              ? "border-red-500/40 bg-red-950/50 text-red-200"
+              : "border-sky-500/20 bg-sky-500/10 text-sky-300"
+          }`}
+        >
           SEQUENCE: {String(tags.SEQ_TEXT)}
+        </div>
+        <div className="flex h-[34px] items-center gap-2 overflow-hidden rounded border border-slate-700/60 bg-slate-950/60 px-2">
+          <span className="shrink-0 font-mono text-[9px] font-bold uppercase text-slate-500">MW 30s</span>
+          <div className="h-6 min-w-0 flex-1">
+            <svg viewBox="0 0 120 24" className="h-full w-full" preserveAspectRatio="none" aria-hidden>
+              {history.MW.length > 1 ? (
+                <polyline
+                  fill="none"
+                  stroke="#34d399"
+                  strokeWidth="1.25"
+                  strokeLinejoin="round"
+                  points={history.MW
+                    .map((v, i) => {
+                      const x = (i / (history.MW.length - 1)) * 120;
+                      const y = 22 - (Math.min(30, Math.max(0, v)) / 30) * 18;
+                      return `${x.toFixed(1)},${y.toFixed(1)}`;
+                    })
+                    .join(" ")}
+                />
+              ) : null}
+            </svg>
+          </div>
         </div>
       </div>
 
-      <div className="mt-1.5 grid grid-cols-5 gap-1.5">
-        <KpiChip label="N25" value={fmt(tags.N25, 1)} unit="RPM" />
-        <KpiChip label="NSD" value={fmt(tags.NSD, 1)} unit="RPM" />
-        <KpiChip label="SE-8100" value={fmt(tags.N25, 1)} unit="RPM" />
-        <KpiChip label="PS3" value={fmt(tags.PS3, 1)} unit="psia" />
-        <KpiChip label="T2" value={fmt(tags.T2, 1)} unit="°F" />
-      </div>
-
-      <div className="mt-1.5 grid grid-cols-5 gap-2">
-        <KpiChip label="N25REF" value={fmt(tags.N25REF, 1)} unit="RPM" />
-        <KpiChip label="NSDREF" value={fmt(tags.NSDREF, 1)} unit="RPM" />
-        <KpiChip label="T48" value={fmt(tags.T48, 1)} unit="°F" />
-        <KpiChip label="T3" value={fmt(tags.T3, 1)} unit="°F" />
-        <div className="rounded-md border border-cyan-400/40 bg-gradient-to-r from-cyan-600/30 to-sky-600/20 px-2 py-1 text-right">
-          <div className="text-[8px] font-medium uppercase tracking-wider text-cyan-200/70">MW</div>
-          <div className="font-mono text-lg font-black text-white">{fmt(tags.MW, 1)}</div>
+      <div className="mt-2 grid grid-cols-6 gap-2 overflow-visible">
+        <KpiChip
+          label="N25"
+          value={fmt(tags.N25, 1)}
+          unit="RPM"
+          emphasize
+          tip="Putaran compressor (HP) — naik saat unit start"
+        />
+        <KpiChip label="NSD" value={fmt(tags.NSD, 1)} unit="RPM" tip="Putaran power turbine / load shaft" />
+        <KpiChip label="PS3" value={fmt(tags.PS3, 1)} unit="psia" tip="Tekanan compressor discharge" />
+        <KpiChip label="T48" value={fmt(tags.T48, 1)} unit="°F" tip="Suhu exhaust turbine (kritikal)" />
+        <KpiChip label="T2" value={fmt(tags.T2, 1)} unit="°F" tip="Suhu inlet udara compressor" />
+        <div className="rounded-md border border-cyan-400/45 bg-gradient-to-r from-cyan-700/30 to-sky-900/40 px-3 py-1.5 text-right">
+          <div className="font-mono text-[9px] font-semibold uppercase tracking-wider text-cyan-200/70">
+            MW OUTPUT
+          </div>
+          <div
+            className={`font-mono text-xl font-black tabular-nums leading-none ${
+              isTrip ? "text-red-300" : "text-white"
+            }`}
+          >
+            {fmt(tags.MW, 1)}
+          </div>
+          <div className="mt-0.5 font-mono text-[8px] text-slate-500">daya listrik keluar</div>
         </div>
       </div>
     </header>

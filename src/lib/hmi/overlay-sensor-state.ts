@@ -69,5 +69,9 @@ export function buildOverlaySensorState(tags: HmiTagMap): HmiSensorState {
     fb3: num(tags, "NOX_FB", 0.0, 1),
     fcv2019: valveOpen(tags, "FCV_2019_STATUS", false),
     mot6015: resolveMotorRunning(tags.MOT_6015_RUN),
+    fan4103a: resolveMotorRunning(tags.MOT_4103A_RUN),
+    fan4103b: resolveMotorRunning(tags.MOT_4103B_RUN),
+    fan4017a: resolveMotorRunning(tags.MOT_4017A_RUN),
+    fan4017b: resolveMotorRunning(tags.MOT_4017B_RUN),
   };
 }

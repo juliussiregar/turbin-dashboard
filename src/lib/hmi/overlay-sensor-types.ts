@@ -43,4 +43,9 @@ export type HmiSensorState = {
   vGas6: boolean;
   fcv2019: boolean;
   mot6015: boolean;
+  /** Enclosure cooling fans — spin only when true. */
+  fan4103a: boolean;
+  fan4103b: boolean;
+  fan4017a: boolean;
+  fan4017b: boolean;
 };

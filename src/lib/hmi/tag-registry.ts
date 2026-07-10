@@ -3,6 +3,7 @@ import { SENSOR_TAG_DEFINITIONS } from "@/lib/hmi/sensor-tag-registry";
 import { MOTOR_TAG_DEFINITIONS } from "@/lib/hmi/motor-tag-registry";
 import { SOLENOID_VALVE_TAG_DEFINITIONS } from "@/lib/hmi/valve-tag-registry";
 import { VANE_TAG_DEFINITIONS } from "@/lib/hmi/vane-tag-registry";
+import { PANEL_TAG_DEFINITIONS } from "@/lib/hmi/panel-tag-registry";
 
 export const TAG_REGISTRY: HmiTagDefinition[] = [
   { id: "N25", label: "N25", unit: "RPM", decimals: 1, min: 0, max: 3100 },
@@ -30,6 +31,7 @@ export const TAG_REGISTRY: HmiTagDefinition[] = [
   ...MOTOR_TAG_DEFINITIONS,
   ...SOLENOID_VALVE_TAG_DEFINITIONS,
   ...VANE_TAG_DEFINITIONS,
+  ...PANEL_TAG_DEFINITIONS,
 ];
 
 const TAG_MAP = new Map(TAG_REGISTRY.map((tag) => [tag.id, tag] as const));
