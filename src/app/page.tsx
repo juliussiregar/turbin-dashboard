@@ -1,5 +1,5 @@
-import { HmiApp } from "@/components/hmi/hmi-app";
+import { HomeDashboard } from "@/components/hmi/home-dashboard";
 
 export default function Home() {
-  return <HmiApp currentScreenId="main" />;
+  return <HomeDashboard />;
 }

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Voltara — Turbine Control",
-  description: "Voltara web HMI POC for gas turbine unit monitoring and control",
+  title: "Voltara — PLTGU Senipah",
+  description: "Voltara plant overview and turbine control HMI",
 };
 
 export default function RootLayout({

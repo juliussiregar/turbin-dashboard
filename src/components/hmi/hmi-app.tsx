@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { MainScreen, MainScreenHeader } from "@/components/hmi/main-screen";
 import {
@@ -47,9 +48,17 @@ function emptyHistory(sim: SimulationState): TagHistory {
 
 type HmiAppProps = {
   currentScreenId: string;
+  unitId?: "gtg1" | "gtg2";
+  demo?: "trip_demo" | "load_ramp";
 };
 
-export function HmiApp({ currentScreenId: _currentScreenId }: HmiAppProps) {
+export function HmiApp({
+  currentScreenId: _currentScreenId,
+  unitId = "gtg1",
+  demo,
+}: HmiAppProps) {
+  const router = useRouter();
+  const unitLabel = unitId === "gtg2" ? "GTG-2" : "GTG-1";
   const [sim, setSim] = useState(() => createInitialSimulationState());
   const [clock, setClock] = useState("");
   const [history, setHistory] = useState<TagHistory>(() => emptyHistory(createInitialSimulationState()));
@@ -63,6 +72,28 @@ export function HmiApp({ currentScreenId: _currentScreenId }: HmiAppProps) {
     const id = setInterval(update, 1000);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") router.push("/");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [router]);
+
+  useEffect(() => {
+    if (demo !== "trip_demo") return;
+    const t = window.setTimeout(() => {
+      setSim((prev) => forceTrip(prev));
+      setAlarms((cur) =>
+        pruneAlarms([
+          createAlarm("SEQ", `${unitLabel} UNIT TRIP — demo scenario from plant overview`, "ALARM"),
+          ...cur,
+        ])
+      );
+    }, 600);
+    return () => window.clearTimeout(t);
+  }, [demo, unitLabel]);
 
   useEffect(() => {
     const tick = setInterval(() => {
@@ -100,7 +131,7 @@ export function HmiApp({ currentScreenId: _currentScreenId }: HmiAppProps) {
   };
 
   return (
-    <div className="flex h-dvh items-stretch justify-center overflow-hidden bg-[radial-gradient(ellipse_at_top,_#1e293b_0%,_#0f172a_50%,_#020617_100%)] p-2">
+    <div className="flex h-dvh animate-[hmi-fade-in_280ms_ease-out] items-stretch justify-center overflow-hidden bg-[radial-gradient(ellipse_at_top,_#1e293b_0%,_#0f172a_50%,_#020617_100%)] p-2">
       <div
         className={`relative grid h-full w-full max-w-[1920px] grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-xl border bg-slate-900 shadow-[0_24px_80px_rgba(0,0,0,0.55)] ${
           isTrip ? "border-red-500/60 shadow-[0_0_40px_rgba(239,68,68,0.2)]" : "border-slate-600/50"
@@ -111,6 +142,7 @@ export function HmiApp({ currentScreenId: _currentScreenId }: HmiAppProps) {
           clock={clock}
           history={history}
           alarmCount={activeAlarmCount}
+          unitLabel={unitLabel}
           onStartSeq={() => {
             setSim((prev) => startSequence(prev));
             pushInfo("Demo: start sequence → CRANKING", "SEQ");
