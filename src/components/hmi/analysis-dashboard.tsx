@@ -157,11 +157,10 @@ function EnginePanel({
 
   return (
     <section
-      className={`group flex min-h-0 flex-col overflow-hidden rounded-lg border bg-white transition duration-200 ${
-        focused
-          ? "border-[#93c5fd] shadow-[0_10px_30px_rgba(37,99,235,0.12)] ring-1 ring-[#bfdbfe]"
-          : "border-[#d5d9e0] shadow-sm hover:border-[#c7d2fe] hover:shadow-md"
-      } ${dimmed ? "opacity-45 grayscale-[0.25]" : "opacity-100"}`}
+      className={`group flex min-h-0 flex-col overflow-hidden rounded-lg border bg-white transition duration-200 ${focused
+        ? "border-[#93c5fd] shadow-[0_10px_30px_rgba(37,99,235,0.12)] ring-1 ring-[#bfdbfe]"
+        : "border-[#d5d9e0] shadow-sm hover:border-[#c7d2fe] hover:shadow-md"
+        } ${dimmed ? "opacity-45 grayscale-[0.25]" : "opacity-100"}`}
     >
       <button
         type="button"
@@ -348,8 +347,8 @@ export function AnalysisDashboard() {
       const now = new Date();
       setClock(
         now.toLocaleTimeString("en-GB", { hour12: false }) +
-          " · " +
-          now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+        " · " +
+        now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
       );
     };
     tick();
@@ -420,58 +419,59 @@ export function AnalysisDashboard() {
       className="flex h-dvh flex-col overflow-hidden font-sans text-[#111827] animate-[hmi-fade-in_280ms_ease-out]"
       style={{ background: PAGE_BG }}
     >
-      <header className="shrink-0 border-b border-[#d5d9e0] bg-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5">
+      <header className="flex flex-col shrink-0 border-b border-[#d5d9e0] bg-white shadow-sm">
+        <div className="flex flex-col gap-3 px-4 py-3 border-b border-[#d5d9e0] lg:flex-row lg:items-center lg:justify-between lg:border-none">
           <div className="flex min-w-0 items-center gap-3">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 rounded border border-[#d5d9e0] bg-[#f8fafc] px-3 py-1.5 text-[12px] font-semibold text-[#374151] transition hover:border-[#93c5fd] hover:bg-[#eff6ff] hover:text-[#1d4ed8]"
+              className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#d5d9e0] bg-[#f8fafc] text-[#374151] transition hover:border-[#93c5fd] hover:bg-[#eff6ff] hover:text-[#1d4ed8]"
+              title="Back to Home"
             >
-              ← Back to Home
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
             </Link>
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-1.5 text-[12px] text-[#6b7280]">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#6b7280]">
                 <Link href="/" className="hover:text-[#111827]">
                   Plant Overview
                 </Link>
-                <span className="text-[#9ca3af]">›</span>
-                <span className="font-medium text-[#111827]">Engine Performance — Scatter Plot</span>
+                <span className="text-[#d5d9e0]">/</span>
+                <span className="text-[#111827]">Engine Performance</span>
               </div>
-              <div className="text-[11px] text-[#9ca3af]">
-                GT output & compressor efficiency deterioration · live cloud simulation
+              <div className="mt-0.5 text-xs text-[#9ca3af] leading-relaxed text-balance">
+                GT output & compressor efficiency deterioration · scatter plot
               </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setLive((v) => !v)}
-              className={`inline-flex items-center gap-1.5 rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition ${
-                live
+          <div className="flex items-center justify-between border-t border-[#f1f5f9] pt-3 lg:border-0 lg:pt-0">
+            <Link href="/trending" className="text-xs font-semibold text-[#2563eb] hover:underline sm:hidden">
+              Trending →
+            </Link>
+            <div className="flex items-center gap-4">
+              <span className="font-mono text-xs tabular-nums text-[#6b7280]">{clock}</span>
+              <button
+                type="button"
+                onClick={() => setLive((v) => !v)}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest transition ${live
                   ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                   : "border-[#d5d9e0] bg-[#f8fafc] text-[#6b7280]"
-              }`}
-              title="Space to toggle"
-            >
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${live ? "animate-pulse bg-emerald-500" : "bg-slate-400"}`}
-              />
-              {live ? "Live" : "Paused"}
-            </button>
-            <span className="font-mono text-[11px] tabular-nums text-[#6b7280]">{clock}</span>
-            <Link
-              href="/trending"
-              className="rounded border border-[#d5d9e0] bg-[#f8fafc] px-2.5 py-1 text-[11px] font-semibold text-[#374151] hover:bg-white"
-            >
-              Trending
-            </Link>
+                  }`}
+                title="Space to toggle"
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${live ? "animate-pulse bg-emerald-500" : "bg-slate-400"}`}
+                />
+                {live ? "Live" : "Paused"}
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#eef0f3] bg-[#f8fafc] px-4 py-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1 rounded border border-[#d5d9e0] bg-white p-0.5">
+        <div className="flex flex-col gap-2 border-t border-[#eef0f3] bg-[#f8fafc] px-4 py-2 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex w-full flex-col gap-2 lg:w-auto lg:flex-row lg:items-center lg:gap-4">
+            <div className="flex w-full shrink-0 items-center gap-1 rounded-md border border-[#d5d9e0] bg-white p-0.5 shadow-sm lg:w-auto">
               {(
                 [
                   { id: "grid" as const, label: "All engines" },
@@ -482,40 +482,43 @@ export function AnalysisDashboard() {
                   key={opt.id}
                   type="button"
                   onClick={() => setLayout(opt.id)}
-                  className={`rounded px-2.5 py-1 text-[11px] font-semibold transition ${
-                    layout === opt.id
-                      ? "bg-[#0f172a] text-white"
-                      : "text-[#6b7280] hover:bg-[#f1f5f9] hover:text-[#111827]"
-                  }`}
+                  className={`flex-1 rounded px-3 py-1.5 text-center text-xs font-semibold transition lg:flex-none ${layout === opt.id
+                    ? "bg-[#0f172a] text-white shadow-sm"
+                    : "text-[#6b7280] hover:bg-[#f1f5f9] hover:text-[#111827]"
+                    }`}
                 >
                   {opt.label}
                 </button>
               ))}
             </div>
 
-            {engines?.map((e, i) => {
-              const health = engineHealth(e);
-              const active = focusId === e.id && layout === "focus";
-              return (
-                <button
-                  key={e.id}
-                  type="button"
-                  onClick={() => {
-                    setFocusId(e.id);
-                    setLayout("focus");
-                  }}
-                  className={`inline-flex items-center gap-1.5 rounded border px-2 py-1 text-[11px] font-semibold transition ${
-                    active
-                      ? "border-[#93c5fd] bg-[#eff6ff] text-[#1d4ed8]"
-                      : "border-[#d5d9e0] bg-white text-[#4b5563] hover:border-[#bfdbfe]"
-                  }`}
-                  title={`Key ${i + 1}`}
-                >
-                  <span className={`h-1.5 w-1.5 rounded-full ${HEALTH_META[health].dot}`} />
-                  ESN {e.esn}
-                </button>
-              );
-            })}
+            <div className="hidden h-5 w-px shrink-0 bg-[#d5d9e0] lg:block" />
+
+            <div className="flex w-full shrink-0 items-center gap-1 rounded-md border border-[#d5d9e0] bg-white p-0.5 shadow-sm lg:w-auto lg:border-none lg:bg-transparent lg:p-0 lg:shadow-none">
+
+              {engines?.map((e, i) => {
+                const health = engineHealth(e);
+                const active = focusId === e.id && layout === "focus";
+                return (
+                  <button
+                    key={e.id}
+                    type="button"
+                    onClick={() => {
+                      setFocusId(e.id);
+                      setLayout("focus");
+                    }}
+                    className={`inline-flex flex-1 shrink-0 items-center justify-center gap-1.5 rounded px-2.5 py-1.5 text-xs font-semibold transition lg:flex-none ${active
+                      ? "bg-[#eff6ff] text-[#1d4ed8] lg:border lg:border-[#93c5fd]"
+                      : "bg-white text-[#4b5563] hover:bg-[#f1f5f9] lg:border lg:border-[#d5d9e0] lg:hover:border-[#bfdbfe]"
+                      }`}
+                    title={`Key ${i + 1}`}
+                  >
+                    <span className={`h-1.5 w-1.5 rounded-full hidden sm:inline-block ${HEALTH_META[health].dot}`} />
+                    {e.esn}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {summary ? (
@@ -573,11 +576,10 @@ export function AnalysisDashboard() {
           </div>
         ) : (
           <div
-            className={`grid h-full gap-3 ${
-              layout === "focus"
-                ? "min-h-[640px] grid-cols-1"
-                : "min-h-[780px] grid-cols-1 md:grid-cols-2"
-            }`}
+            className={`grid h-full gap-3 ${layout === "focus"
+              ? "min-h-[640px] grid-cols-1"
+              : "min-h-[2100px] grid-cols-1 md:min-h-[780px] md:grid-cols-2"
+              }`}
           >
             {visibleEngines.map((engine) => (
               <EnginePanel
@@ -597,6 +599,8 @@ export function AnalysisDashboard() {
             ))}
           </div>
         )}
+        {/* Spacer to fix flexbox bottom padding collapse on mobile browsers */}
+        <div className="h-6 shrink-0 lg:hidden" />
       </main>
 
       <footer className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-[#d5d9e0] bg-white px-4 py-2 text-[10px] text-[#6b7280]">
