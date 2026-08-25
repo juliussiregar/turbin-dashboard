@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { MobileBottomSheetSelect } from "@/components/ui/mobile-bottom-sheet-select";
 import {
   CartesianGrid,
   Legend,
@@ -326,6 +327,7 @@ function TrendChart({
   onHoverTooltip: (next: HoverTooltipContent | null) => void;
   tooltipEnabled: boolean;
 }) {
+  const [metricSelectOpen, setMetricSelectOpen] = useState(false);
   const metric = getMetric(metricId);
   const series =
     layout === "focus" ? TREND_SERIES.filter((s) => s.id === focusUnit) : TREND_SERIES;
@@ -359,7 +361,7 @@ function TrendChart({
             id={`metric-${panelKey}`}
             value={metricId}
             onChange={(e) => onMetricChange(e.target.value as TrendMetricId)}
-            className="rounded border border-[#d5d9e0] bg-[#f8fafc] px-2 py-1 text-[12px] font-semibold text-[#374151] outline-none hover:border-[#93c5fd] focus:border-[#2563eb]"
+            className="hidden rounded border border-[#d5d9e0] bg-[#f8fafc] px-2 py-1 text-[12px] font-semibold text-[#374151] outline-none hover:border-[#93c5fd] focus:border-[#2563eb] sm:block"
           >
             {TREND_METRICS.map((m) => (
               <option key={m.id} value={m.id}>
@@ -367,6 +369,25 @@ function TrendChart({
               </option>
             ))}
           </select>
+          <button
+            type="button"
+            onClick={() => setMetricSelectOpen(true)}
+            className="flex items-center gap-1.5 rounded border border-[#d5d9e0] bg-[#f8fafc] px-3 py-1.5 text-xs font-semibold text-[#374151] sm:hidden"
+          >
+            {TREND_METRICS.find((m) => m.id === metricId)?.title}
+            <svg className="h-3.5 w-3.5 text-[#6b7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <MobileBottomSheetSelect
+            isOpen={metricSelectOpen}
+            onClose={() => setMetricSelectOpen(false)}
+            title="SELECT PARAMETER"
+            value={metricId}
+            options={TREND_METRICS.map((m) => ({ id: m.id, label: m.title }))}
+            onChange={(val) => onMetricChange(val as TrendMetricId)}
+          />
         </div>
         <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px] tabular-nums text-[#6b7280]">
           {strip.map((s) => (
@@ -400,8 +421,8 @@ function TrendChart({
               tick={{ fill: AXIS, fontSize: 10 }}
               tickLine={false}
               axisLine={{ stroke: BORDER }}
-              minTickGap={24}
-              interval="preserveStartEnd"
+              minTickGap={32}
+              interval="equidistantPreserveStart"
             />
             <YAxis
               domain={[metric.yMin, metric.yMax]}
@@ -479,7 +500,7 @@ function TrendChart({
               width: `${Math.max(
                 8,
                 ((brushIndexes.endIndex - brushIndexes.startIndex + 1) / Math.max(1, data.length)) *
-                  100
+                100
               )}%`,
               marginLeft: `${(brushIndexes.startIndex / Math.max(1, data.length - 1)) * (100 - 8)}%`,
             }}
@@ -502,6 +523,7 @@ export function TrendingDashboard() {
   const [brush, setBrush] = useState({ startIndex: 0, endIndex: 0 });
   const [hoverTooltip, setHoverTooltip] = useState<HoverTooltipContent | null>(null);
   const [hoverHost, setHoverHost] = useState<string | null>(null);
+  const [unitSelectOpen, setUnitSelectOpen] = useState(false);
 
   const onHoverTooltip = useCallback((next: HoverTooltipContent | null) => {
     setHoverTooltip((prev) => {
@@ -549,8 +571,8 @@ export function TrendingDashboard() {
       const now = new Date();
       setClock(
         now.toLocaleTimeString("en-GB", { hour12: false }) +
-          " · " +
-          now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+        " · " +
+        now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
       );
     };
     tick();
@@ -605,131 +627,166 @@ export function TrendingDashboard() {
       style={{ background: PAGE_BG }}
     >
       <FloatingTooltip content={hoverTooltip} />
-      <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[#d5d9e0] bg-white px-4 py-2.5 shadow-sm">
-        <div className="flex min-w-0 items-center gap-3">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 rounded border border-[#d5d9e0] bg-[#f8fafc] px-3 py-1.5 text-[12px] font-semibold text-[#374151] transition hover:border-[#93c5fd] hover:bg-[#eff6ff] hover:text-[#1d4ed8]"
-          >
-            ← Back to Home
-          </Link>
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-1.5 text-[12px] text-[#6b7280]">
-              <Link href="/" className="hover:text-[#111827]">
-                Plant Overview
-              </Link>
-              <span className="text-[#9ca3af]">›</span>
-              <span className="font-medium text-[#111827]">Trending Multi Parameter</span>
-              <span className="text-[#9ca3af]">·</span>
-              <Link href="/analysis" className="hover:text-[#2563eb]">
-                Analysis
-              </Link>
+
+      <MobileBottomSheetSelect
+        isOpen={unitSelectOpen}
+        onClose={() => setUnitSelectOpen(false)}
+        title="SELECT UNIT"
+        value={focusUnit}
+        options={TREND_SERIES.map((s) => ({ id: s.id, label: s.label }))}
+        onChange={(val) => setFocusUnit(val as TrendSeriesId)}
+      />
+
+      <header className="flex flex-col shrink-0 border-b border-[#d5d9e0] bg-white shadow-sm">
+        {/* Top Tier: Nav & Title */}
+        <div className="flex flex-col gap-3 px-4 py-3 border-b border-[#d5d9e0] lg:flex-row lg:items-center lg:justify-between lg:border-none">
+          <div className="flex min-w-0 items-center gap-3">
+            <Link
+              href="/"
+              className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#d5d9e0] bg-[#f8fafc] text-[#374151] transition hover:border-[#93c5fd] hover:bg-[#eff6ff] hover:text-[#1d4ed8]"
+              title="Back to Home"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </Link>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#6b7280]">
+                <Link href="/" className="hover:text-[#111827]">Plant Overview</Link>
+                <span className="text-[#d5d9e0]">/</span>
+                <span className="text-[#111827]">Trending Multi-Parameter</span>
+                <span className="text-[#d5d9e0] hidden sm:inline">/</span>
+                <Link href="/analysis" className="hidden sm:inline hover:text-[#2563eb]">Analysis</Link>
+              </div>
+              <div className="mt-0.5 text-xs text-[#9ca3af] leading-relaxed">
+                Sync crosshair · event markers · brush zoom · dummy live feed
+              </div>
             </div>
-            <div className="text-[11px] text-[#9ca3af]">
-              Sync crosshair · event markers · brush zoom · dummy live feed
+          </div>
+
+          <div className="flex items-center justify-between border-t border-[#f1f5f9] pt-3 lg:border-0 lg:pt-0">
+            <Link href="/analysis" className="text-xs font-semibold text-[#2563eb] hover:underline sm:hidden">
+              Analysis →
+            </Link>
+            <div className="flex items-center gap-4">
+              <div className="font-mono text-xs tabular-nums text-[#6b7280]">{clock}</div>
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-700">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                Live
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-            Live
-          </span>
-          <span className="font-mono text-[11px] tabular-nums text-[#6b7280]">{clock}</span>
-          <Link
-            href="/analysis"
-            className="rounded border border-[#d5d9e0] bg-[#f8fafc] px-2.5 py-1 text-[11px] font-semibold text-[#374151] hover:bg-white"
-          >
-            Analysis →
-          </Link>
-
-          <div className="flex items-center gap-1 rounded border border-[#d5d9e0] bg-[#f8fafc] p-0.5">
-            {(
-              [
-                { id: "comparison", label: "Comparison" },
-                { id: "focus", label: "Single unit" },
-              ] as const
-            ).map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => setLayout(opt.id)}
-                className={`rounded px-2.5 py-1 text-[11px] font-semibold transition ${
-                  layout === opt.id
-                    ? "bg-[#0f172a] text-white"
-                    : "text-[#6b7280] hover:bg-white hover:text-[#111827]"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-
-          {layout === "focus" ? (
-            <select
-              value={focusUnit}
-              onChange={(e) => setFocusUnit(e.target.value as TrendSeriesId)}
-              className="rounded border border-[#d5d9e0] bg-white px-2 py-1 text-[11px] font-semibold text-[#374151]"
-            >
-              {TREND_SERIES.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.label}
-                </option>
+        {/* Bottom Tier: Toolbars */}
+        <div className="flex flex-col gap-2 border-t border-[#f1f5f9] bg-[#f8fafc] px-4 py-2 lg:flex-row lg:items-center lg:justify-between">
+          {/* View Modes */}
+          <div className="flex w-full items-center gap-2 lg:w-auto">
+            <div className="flex flex-1 items-center gap-1 rounded-md border border-[#d5d9e0] bg-white p-0.5 shadow-sm">
+              {(
+                [
+                  { id: "comparison", label: "Comparison" },
+                  { id: "focus", label: "Single Unit" },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setLayout(opt.id)}
+                  className={`flex-1 rounded px-3 py-1.5 text-xs font-semibold transition ${layout === opt.id
+                    ? "bg-[#0f172a] text-white shadow-sm"
+                    : "text-[#6b7280] hover:bg-[#f1f5f9] hover:text-[#111827]"
+                    }`}
+                >
+                  {opt.label}
+                </button>
               ))}
-            </select>
-          ) : null}
+            </div>
 
-          <div className="flex items-center gap-1 rounded border border-[#d5d9e0] bg-[#f8fafc] p-0.5">
-            {TREND_RANGES.map((r) => (
-              <button
-                key={r.id}
-                type="button"
-                onClick={() => setRangeId(r.id)}
-                className={`rounded px-2.5 py-1 text-[11px] font-semibold transition ${
-                  rangeId === r.id
-                    ? "bg-[#2563eb] text-white"
-                    : "text-[#6b7280] hover:bg-white hover:text-[#111827]"
-                }`}
-              >
-                {r.label}
-              </button>
-            ))}
+            {layout === "focus" && (
+              <>
+                <select
+                  value={focusUnit}
+                  onChange={(e) => setFocusUnit(e.target.value as TrendSeriesId)}
+                  className="hidden shrink-0 rounded-md border border-[#d5d9e0] bg-white px-3 py-1.5 text-sm font-semibold text-[#111827] shadow-sm outline-none focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb] lg:block"
+                >
+                  {TREND_SERIES.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setUnitSelectOpen(true)}
+                  className="flex shrink-0 items-center gap-2 rounded-md border border-[#d5d9e0] bg-white px-3 py-1.5 text-xs font-semibold text-[#111827] shadow-sm lg:hidden"
+                >
+                  {TREND_SERIES.find((s) => s.id === focusUnit)?.label}
+                  <svg className="h-3.5 w-3.5 text-[#6b7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </>
+            )}
           </div>
 
-          <div className="hidden items-center gap-2 text-[11px] text-[#6b7280] lg:flex">
-            <span className="rounded border border-[#d5d9e0] bg-[#f8fafc] px-2 py-1">
-              now-{rangeMeta.label} → now
-            </span>
+          {/* Time Ranges */}
+          <div className="flex w-full items-center gap-2 lg:w-auto">
+            <div className="hidden items-center gap-2 text-[11px] text-[#6b7280] lg:flex">
+              <span className="rounded-md border border-[#d5d9e0] bg-white px-2.5 py-1.5 shadow-sm">
+                now-{rangeMeta.label} → now
+              </span>
+            </div>
+            <div className="flex flex-1 items-center gap-1 rounded-md border border-[#d5d9e0] bg-white p-0.5 shadow-sm">
+              {TREND_RANGES.map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => setRangeId(r.id)}
+                  className={`flex-1 rounded px-2 py-1.5 text-[10px] sm:px-3 sm:text-xs font-semibold transition ${rangeId === r.id
+                    ? "bg-[#2563eb] text-white shadow-sm"
+                    : "text-[#6b7280] hover:bg-[#f1f5f9] hover:text-[#111827]"
+                    }`}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
             <button
               type="button"
-              onClick={() =>
-                setBrush({ startIndex: 0, endIndex: Math.max(0, primaryPoints.length - 1) })
-              }
-              className="rounded border border-[#d5d9e0] bg-[#f8fafc] px-2 py-1 font-semibold hover:bg-white"
+              onClick={() => setBrush({ startIndex: 0, endIndex: Math.max(0, primaryPoints.length - 1) })}
+              className="hidden shrink-0 rounded-md border border-[#d5d9e0] bg-white px-3 py-1.5 text-xs font-semibold text-[#6b7280] shadow-sm transition hover:bg-[#f1f5f9] hover:text-[#111827] lg:block"
             >
-              Reset zoom
+              Reset Zoom
             </button>
           </div>
         </div>
       </header>
 
-      <main className="grid min-h-0 flex-1 grid-rows-[minmax(0,1.15fr)_minmax(0,1fr)] gap-2 overflow-hidden p-2 md:p-3">
+      <main className="flex flex-col lg:grid min-h-0 flex-1 lg:grid-rows-[minmax(0,1.15fr)_minmax(0,1fr)] gap-2 overflow-y-auto lg:overflow-hidden p-2 md:p-3">
         {loading || !seriesMap ? (
           <>
-            <ChartSkeleton />
-            <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-2">
+            <div className="min-h-[300px] lg:min-h-0 shrink-0">
               <ChartSkeleton />
-              <div className="grid min-h-0 grid-rows-2 gap-2">
+            </div>
+            <div className="flex flex-col lg:grid min-h-0 lg:grid-cols-2 gap-2">
+              <div className="min-h-[250px] lg:min-h-0 shrink-0">
                 <ChartSkeleton />
-                <ChartSkeleton />
+              </div>
+              <div className="flex flex-col lg:grid min-h-0 lg:grid-rows-2 gap-2">
+                <div className="min-h-[250px] lg:min-h-0 shrink-0">
+                  <ChartSkeleton />
+                </div>
+                <div className="min-h-[250px] lg:min-h-0 shrink-0">
+                  <ChartSkeleton />
+                </div>
               </div>
             </div>
           </>
         ) : (
           <>
             <div
-              className="min-h-0"
+              className="min-h-[300px] lg:min-h-0 shrink-0"
               onMouseEnter={() => setHoverHost("p0")}
               onMouseLeave={() => {
                 setHoverHost((h) => (h === "p0" ? null : h));
@@ -752,9 +809,9 @@ export function TrendingDashboard() {
               />
             </div>
 
-            <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-2">
+            <div className="flex flex-col lg:grid min-h-0 lg:grid-cols-2 gap-2">
               <div
-                className="min-h-0"
+                className="min-h-[250px] lg:min-h-0 shrink-0"
                 onMouseEnter={() => setHoverHost("p1")}
                 onMouseLeave={() => {
                   setHoverHost((h) => (h === "p1" ? null : h));
@@ -775,9 +832,9 @@ export function TrendingDashboard() {
                   tooltipEnabled={hoverHost === "p1"}
                 />
               </div>
-              <div className="grid min-h-0 grid-rows-2 gap-2">
+              <div className="flex flex-col lg:grid min-h-0 lg:grid-rows-2 gap-2">
                 <div
-                  className="min-h-0"
+                  className="min-h-[250px] lg:min-h-0 shrink-0"
                   onMouseEnter={() => setHoverHost("p2")}
                   onMouseLeave={() => {
                     setHoverHost((h) => (h === "p2" ? null : h));
@@ -799,7 +856,7 @@ export function TrendingDashboard() {
                   />
                 </div>
                 <div
-                  className="min-h-0"
+                  className="min-h-[250px] lg:min-h-0 shrink-0"
                   onMouseEnter={() => setHoverHost("p3")}
                   onMouseLeave={() => {
                     setHoverHost((h) => (h === "p3" ? null : h));
@@ -820,6 +877,7 @@ export function TrendingDashboard() {
                     tooltipEnabled={hoverHost === "p3"}
                   />
                 </div>
+                <div className="h-2 shrink-0 lg:hidden" />
               </div>
             </div>
           </>

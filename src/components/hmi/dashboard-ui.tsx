@@ -310,7 +310,7 @@ export function AlarmListPanel({
   if (!open) return null;
 
   return (
-    <div className="absolute bottom-4 right-[160px] z-30 w-[380px] overflow-hidden rounded-md border border-slate-500/60 bg-slate-950 shadow-2xl">
+    <div className="absolute bottom-[4.5rem] left-4 right-4 z-[60] overflow-hidden rounded-md border border-slate-500/60 bg-slate-950 shadow-2xl md:bottom-4 md:left-auto md:right-[160px] md:z-30 md:w-[380px]">
       <div className="flex items-center justify-between border-b border-slate-700 bg-slate-900 px-3 py-2">
         <span className="text-[11px] font-bold tracking-wide text-slate-200">ALARM / EVENT LIST</span>
         <button type="button" onClick={onClose} className="text-[11px] font-bold text-slate-400 hover:text-white">
@@ -449,33 +449,35 @@ export function DemoBar({
   tripActive: boolean;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-md border border-slate-600/60 bg-slate-950/70 px-2.5 py-1.5">
-      <span className="font-mono text-[9px] font-bold uppercase tracking-wider text-slate-500">Demo</span>
-      <button
-        type="button"
-        onClick={onStart}
-        className="rounded border border-sky-500/40 bg-sky-700/40 px-2 py-1 font-mono text-[9px] font-bold text-sky-100 hover:bg-sky-600/50"
-      >
-        Start Seq
-      </button>
-      <button
-        type="button"
-        onClick={onTrip}
-        className="rounded border border-amber-500/40 bg-amber-800/40 px-2 py-1 font-mono text-[9px] font-bold text-amber-100 hover:bg-amber-700/50"
-      >
-        Force Trip
-      </button>
-      <button
-        type="button"
-        onClick={onReset}
-        className={`rounded border px-2 py-1 font-mono text-[9px] font-bold ${
-          tripActive
-            ? "border-red-400/70 bg-red-600 text-white ring-2 ring-red-400/50"
-            : "border-slate-500/50 bg-slate-700/50 text-slate-200 hover:bg-slate-600/60"
-        }`}
-      >
-        Reset
-      </button>
+    <div className="flex w-full flex-wrap items-center gap-3 rounded-md border border-slate-600/60 bg-slate-950/70 px-2.5 py-1.5 sm:w-auto sm:gap-2">
+      <span className="shrink-0 font-mono text-[9px] font-bold uppercase tracking-wider text-slate-500">Demo</span>
+      <div className="flex flex-1 items-center gap-1.5">
+        <button
+          type="button"
+          onClick={onStart}
+          className="flex-1 shrink-0 rounded border border-sky-500/40 bg-sky-700/40 px-2 py-1 text-center font-mono text-[9px] font-bold text-sky-100 hover:bg-sky-600/50 sm:flex-none"
+        >
+          Start Seq
+        </button>
+        <button
+          type="button"
+          onClick={onTrip}
+          className="flex-1 shrink-0 rounded border border-amber-500/40 bg-amber-800/40 px-2 py-1 text-center font-mono text-[9px] font-bold text-amber-100 hover:bg-amber-700/50 sm:flex-none"
+        >
+          Force Trip
+        </button>
+        <button
+          type="button"
+          onClick={onReset}
+          className={`flex-1 shrink-0 rounded border px-2 py-1 text-center font-mono text-[9px] font-bold sm:flex-none ${
+            tripActive
+              ? "border-red-400/70 bg-red-600 text-white ring-2 ring-red-400/50"
+              : "border-slate-500/50 bg-slate-700/50 text-slate-200 hover:bg-slate-600/60"
+          }`}
+        >
+          Reset
+        </button>
+      </div>
     </div>
   );
 }

@@ -440,24 +440,24 @@ export function MainScreenHeader({
               <span className="font-mono text-[13px] font-black leading-none tracking-tight text-slate-950">V</span>
             </div>
             <div className="min-w-0">
-              <div className="flex items-baseline gap-2">
+              <div className="flex items-center gap-2">
                 <span className="text-sm font-black tracking-[0.14em] text-white">VOLTARA</span>
                 <span className="rounded border border-cyan-500/30 bg-cyan-500/10 px-1.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-wider text-cyan-300">
                   WEB POC
                 </span>
+                {alarmCount > 0 || isTrip ? (
+                  <div className="shrink-0 rounded border border-red-500/40 bg-red-950/60 px-2 py-0.5 font-mono text-[9px] font-bold text-red-200">
+                    {isTrip ? "TRIP" : `${alarmCount} ACTIVE`}
+                  </div>
+                ) : (
+                  <div className="shrink-0 rounded border border-emerald-500/25 bg-emerald-950/40 px-2 py-0.5 font-mono text-[9px] font-bold text-emerald-300">
+                    NORMAL
+                  </div>
+                )}
               </div>
               <div className="text-[10px] text-slate-400">Turbine Control · {unitLabel}</div>
             </div>
           </Link>
-          {alarmCount > 0 || isTrip ? (
-            <div className="shrink-0 rounded border border-red-500/40 bg-red-950/60 px-2 py-0.5 font-mono text-[9px] font-bold text-red-200">
-              {isTrip ? "TRIP" : `${alarmCount} ACTIVE`}
-            </div>
-          ) : (
-            <div className="shrink-0 rounded border border-emerald-500/25 bg-emerald-950/40 px-2 py-0.5 font-mono text-[9px] font-bold text-emerald-300">
-              NORMAL
-            </div>
-          )}
         </div>
 
         <div className="flex items-center justify-between border-t border-slate-700/50 pt-2 lg:block lg:border-0 lg:pt-0 lg:text-right">
