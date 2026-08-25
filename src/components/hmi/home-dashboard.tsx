@@ -255,16 +255,16 @@ export function HomeDashboard() {
   };
 
   return (
-    <div className="relative h-dvh w-full animate-[hmi-fade-in_280ms_ease-out] overflow-hidden bg-[#020617] font-sans text-white">
+    <div className="relative h-dvh w-full animate-[hmi-fade-in_280ms_ease-out] overflow-y-auto overflow-x-hidden bg-[#020617] font-sans text-white">
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url(/hmi/plant-night-bg.jpg)" }}
       />
-      <div className="absolute inset-0 bg-[#020617]/45" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#020617]/50 via-transparent to-[#020617]/65" />
+      <div className="fixed inset-0 bg-[#020617]/45" />
+      <div className="fixed inset-0 bg-gradient-to-b from-[#020617]/50 via-transparent to-[#020617]/65" />
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1440px] flex-col px-8 py-5 lg:px-12">
-        <header className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-start gap-4">
+      <div className="relative z-10 mx-auto flex min-h-full w-full max-w-[1440px] flex-col px-4 py-4 sm:px-6 md:px-8 lg:px-12 lg:py-5">
+        <header className="flex shrink-0 flex-col items-center gap-5 text-center md:grid md:grid-cols-[1fr_auto_1fr] md:items-start md:gap-4 md:text-left">
           <div>
             <div className="text-[22px] font-semibold leading-none tracking-wide text-white">
               Voltara
@@ -272,7 +272,7 @@ export function HomeDashboard() {
             <div className="mt-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-slate-400">
               Plant Overview
             </div>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2 md:justify-start">
               <span className="inline-flex items-center gap-1.5 rounded border border-emerald-400/30 bg-emerald-950/40 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
                 Live
@@ -291,8 +291,8 @@ export function HomeDashboard() {
             </div>
           </div>
 
-          <div className="flex flex-col items-end gap-2">
-            <div className="flex flex-wrap justify-end gap-2">
+          <div className="flex flex-col items-center gap-2 md:items-end">
+            <div className="flex flex-wrap justify-center gap-2 md:justify-end">
               <Link
                 href="/trending"
                 className="rounded border border-white/15 bg-white/5 px-2.5 py-1.5 text-[11px] font-semibold text-slate-200 transition hover:border-lime-300/40 hover:bg-lime-400/10 hover:text-lime-100"
@@ -329,7 +329,7 @@ export function HomeDashboard() {
           </div>
         </header>
 
-        <div className="mt-4 flex shrink-0 flex-wrap items-center gap-2">
+        <div className="mt-4 flex shrink-0 flex-wrap items-center justify-center gap-2 md:justify-start">
           <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
             Scenario
           </span>
@@ -370,7 +370,7 @@ export function HomeDashboard() {
           </div>
         ) : null}
 
-        <main className="mt-5 grid min-h-0 flex-1 grid-cols-3 content-start items-stretch gap-5 overflow-auto pb-2 lg:gap-6">
+        <main className="mt-4 grid flex-1 grid-cols-1 content-start items-stretch gap-4 pb-6 sm:grid-cols-2 md:mt-5 md:gap-5 lg:grid-cols-3 lg:gap-6">
           {state.units.map((unit) => (
             <UnitCard key={unit.id} unit={unit} scenario={state.scenario} />
           ))}

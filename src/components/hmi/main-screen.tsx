@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   ActionButton,
   AlarmListPanel,
@@ -107,18 +107,28 @@ export function MainScreen({
   const runPermissiveOk = String(tags.RUN_PERMISSIVE) === "OK";
   const mwCtrlEnabled = String(tags.MW_CTRL_ENBL) === "ENABLED";
   const isTrip = sim.mode === "TRIP";
+  const [overlayExpanded, setOverlayExpanded] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [rotated, setRotated] = useState(false);
 
   return (
-    <div className="relative grid h-full min-h-0 grid-cols-[minmax(0,1fr)_136px] gap-2 overflow-hidden p-2">
-      <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_auto_minmax(150px,0.26fr)] gap-2 overflow-hidden">
+    <div className="relative flex flex-col lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_136px] gap-2 overflow-visible lg:overflow-hidden p-2">
+      <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-rows-[minmax(0,1fr)_auto_minmax(150px,0.26fr)] gap-2 overflow-visible lg:overflow-hidden">
         {/* Process image scales to fit cell — always fully visible, no scroll */}
-        <div className="grid min-h-0 grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)] gap-2 overflow-hidden">
-          <div className="min-h-0 min-w-0 overflow-hidden rounded-md border border-slate-700/70 bg-black">
+        <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)] gap-2 overflow-visible lg:overflow-hidden">
+          <div className="group relative aspect-video min-h-0 min-w-0 overflow-hidden rounded-md border border-slate-700/70 bg-black lg:aspect-auto">
             <HmiOverlay s={overlayState} showScaleControl={false} />
+            <button
+              type="button"
+              onClick={() => setOverlayExpanded(true)}
+              className="absolute right-2 top-2 rounded bg-black/60 px-2.5 py-1.5 text-[10px] font-bold tracking-wide text-cyan-200 opacity-90 backdrop-blur-sm transition hover:bg-black/80 hover:text-cyan-100 lg:hidden"
+            >
+              🔍 VIEW DIAGRAM
+            </button>
           </div>
 
-          <div className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-2 overflow-hidden">
-            <div className="grid shrink-0 grid-cols-3 gap-1.5">
+          <div className="flex flex-col md:grid md:min-h-0 md:grid-rows-[auto_minmax(0,1fr)] gap-2 overflow-visible md:overflow-hidden lg:grid-rows-[auto_minmax(0,1fr)]">
+            <div className="grid shrink-0 grid-cols-1 sm:grid-cols-3 gap-1.5">
               <TrendCard
                 label="MW"
                 value={fmt(tags.MW, 1)}
@@ -148,7 +158,7 @@ export function MainScreen({
               />
             </div>
 
-            <div className="grid min-h-0 grid-cols-2 grid-rows-3 gap-1.5 overflow-hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 lg:grid-rows-3 gap-1.5 overflow-visible md:overflow-hidden">
               <Panel title="ENGINE PARAMETERS" accent="cyan" compact className="min-h-0">
                 <LiveTable tags={tags} rows={ENGINE_PANEL_ROWS} />
               </Panel>
@@ -174,7 +184,7 @@ export function MainScreen({
 
         <AlarmStrip alarms={alarms} onAck={onAck} onOpen={onAlarmListToggle} tripActive={isTrip} />
 
-        <div className="grid min-h-0 grid-cols-4 gap-2 overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 overflow-visible lg:overflow-hidden">
           <Panel title="SYSTEM STATUSES" accent="emerald" compact>
             <div className="grid grid-cols-2 gap-1.5">
               <StatusLamp
@@ -265,7 +275,7 @@ export function MainScreen({
         </div>
       </div>
 
-      <aside className="flex min-h-0 flex-col overflow-hidden rounded-md border border-teal-500/35 bg-gradient-to-b from-[#0d3d42] via-[#0a2a30] to-[#071018] p-1.5">
+      <aside className="flex flex-col md:min-h-0 overflow-hidden rounded-md border border-teal-500/35 bg-gradient-to-b from-[#0d3d42] via-[#0a2a30] to-[#071018] p-1.5">
         <div className="mb-1.5 grid shrink-0 grid-cols-2 gap-0.5">
           {["CONTROL", "SYSTEMS", "MISC", "VG CAL"].map((tab, i) => (
             <button
@@ -282,7 +292,7 @@ export function MainScreen({
         <div className="mb-1.5 shrink-0 rounded border border-cyan-400/30 bg-cyan-500/10 py-1 text-center text-[9px] font-bold text-cyan-100">
           MAIN SCREEN
         </div>
-        <div className="grid min-h-0 flex-1 grid-rows-[repeat(15,minmax(0,1fr))] gap-0.5 overflow-hidden">
+        <div className="grid min-h-0 flex-1 grid-cols-2 sm:grid-cols-3 md:grid-cols-1 md:grid-rows-[repeat(15,minmax(0,1fr))] gap-1 md:gap-0.5 overflow-visible md:overflow-hidden">
           {NAV_ITEMS.map((item) => (
             <NavButton key={item} label={item} active={navActive === item} onClick={() => onNavSelect(item)} />
           ))}
@@ -296,6 +306,73 @@ export function MainScreen({
       </aside>
 
       <AlarmListPanel alarms={alarms} open={alarmListOpen} onClose={onAlarmListClose} />
+
+      {overlayExpanded && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-slate-950 lg:hidden">
+          <div className="flex shrink-0 items-center justify-between border-b border-slate-800 bg-slate-900 px-4 py-3 shadow-md">
+            <div className="text-[11px] font-bold tracking-widest text-cyan-400">TURBINE DIAGRAM</div>
+            <button
+              type="button"
+              onClick={() => {
+                setOverlayExpanded(false);
+                setZoom(1);
+                setRotated(false);
+              }}
+              className="rounded border border-slate-700 bg-slate-800 px-3 py-1.5 text-[10px] font-bold text-slate-300 hover:bg-slate-700 hover:text-white"
+            >
+              CLOSE
+            </button>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-3 border-b border-slate-800 bg-slate-900 px-4 py-2 shadow-sm">
+             <div className="flex flex-1 items-center gap-2 text-[10px] font-bold text-slate-400">
+               <span>ZOOM</span>
+               <input 
+                 type="range" 
+                 min="1" max="4" step="0.1" 
+                 value={zoom} 
+                 onChange={(e) => setZoom(Number(e.target.value))} 
+                 className="flex-1 accent-cyan-500" 
+               />
+             </div>
+             <button
+               type="button"
+               onClick={() => setRotated(!rotated)}
+               className="rounded border border-slate-700 bg-slate-800 px-2.5 py-1 text-[10px] font-bold text-slate-300 active:bg-slate-700"
+             >
+               ROTATE
+             </button>
+             <button
+               type="button"
+               onClick={() => { setZoom(1); setRotated(false); }}
+               className="rounded border border-slate-700 bg-slate-800 px-2.5 py-1 text-[10px] font-bold text-slate-300 active:bg-slate-700"
+             >
+               RESET
+             </button>
+          </div>
+
+          <div className="flex flex-1 overflow-auto bg-black p-4">
+            <div 
+              className="relative m-auto shrink-0 transition-all duration-300"
+              style={{
+                width: `${100 * zoom}%`,
+                minWidth: "100%",
+                aspectRatio: rotated ? "9 / 16" : "16 / 9",
+              }}
+            >
+              <div 
+                className="absolute left-1/2 top-1/2 aspect-video transition-all duration-300"
+                style={{
+                  width: rotated ? "177.77%" : "100%",
+                  transform: `translate(-50%, -50%) rotate(${rotated ? 90 : 0}deg)`,
+                }}
+              >
+                <HmiOverlay s={overlayState} showScaleControl={false} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -352,7 +429,7 @@ export function MainScreenHeader({
         </Link>
       </div>
 
-      <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+      <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[1fr_auto] lg:items-center">
         <div className="flex min-w-0 items-center gap-2.5">
           <Link
             href="/"
@@ -383,7 +460,7 @@ export function MainScreenHeader({
           )}
         </div>
 
-        <div className="text-right">
+        <div className="flex items-center justify-between border-t border-slate-700/50 pt-2 lg:block lg:border-0 lg:pt-0 lg:text-right">
           <div className="text-sm font-bold">
             MAIN SCREEN <span className="text-slate-500">|</span>{" "}
             <span className={`font-mono ${isTrip ? "text-red-300" : "text-cyan-200"}`}>{sim.mode}</span>
@@ -394,19 +471,23 @@ export function MainScreenHeader({
         </div>
       </div>
 
-      <div className="mt-2 grid grid-cols-[auto_1fr_1fr_200px] items-center gap-2 text-[11px]">
-        <DemoBar onStart={onStartSeq} onTrip={onForceTrip} onReset={onDemoReset} tripActive={isTrip} />
-        <div className="truncate rounded border border-sky-500/20 bg-sky-500/10 px-2.5 py-1.5 font-semibold text-sky-300">
-          REGULATOR: NSDPRX — NSD Regulator
+      <div className="mt-3 flex flex-col gap-2 text-[11px] lg:grid lg:grid-cols-[auto_1fr_1fr_200px] lg:items-center">
+        <div className="flex justify-center lg:justify-start">
+          <DemoBar onStart={onStartSeq} onTrip={onForceTrip} onReset={onDemoReset} tripActive={isTrip} />
         </div>
-        <div
-          className={`truncate rounded border px-2.5 py-1.5 text-right font-semibold ${
-            isTrip
-              ? "border-red-500/40 bg-red-950/50 text-red-200"
-              : "border-sky-500/20 bg-sky-500/10 text-sky-300"
-          }`}
-        >
-          SEQUENCE: {String(tags.SEQ_TEXT)}
+        <div className="grid grid-cols-2 gap-2 lg:contents">
+          <div className="flex items-center justify-center lg:justify-start truncate rounded border border-sky-500/20 bg-sky-500/10 px-2.5 py-1.5 font-semibold text-sky-300">
+            REG: NSDPRX
+          </div>
+          <div
+            className={`flex items-center justify-center lg:justify-end truncate rounded border px-2.5 py-1.5 font-semibold ${
+              isTrip
+                ? "border-red-500/40 bg-red-950/50 text-red-200"
+                : "border-sky-500/20 bg-sky-500/10 text-sky-300"
+            }`}
+          >
+            SEQ: {String(tags.SEQ_TEXT)}
+          </div>
         </div>
         <div className="flex h-[34px] items-center gap-2 overflow-hidden rounded border border-slate-700/60 bg-slate-950/60 px-2">
           <span className="shrink-0 font-mono text-[9px] font-bold uppercase text-slate-500">MW 30s</span>
@@ -432,7 +513,7 @@ export function MainScreenHeader({
         </div>
       </div>
 
-      <div className="mt-2 grid grid-cols-6 gap-2 overflow-visible">
+      <div className="mt-2 grid grid-cols-2 gap-2 overflow-visible sm:grid-cols-3 lg:grid-cols-6">
         <KpiChip
           label="N25"
           value={fmt(tags.N25, 1)}

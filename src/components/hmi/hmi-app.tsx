@@ -131,9 +131,9 @@ export function HmiApp({
   };
 
   return (
-    <div className="flex h-dvh animate-[hmi-fade-in_280ms_ease-out] items-stretch justify-center overflow-hidden bg-[radial-gradient(ellipse_at_top,_#1e293b_0%,_#0f172a_50%,_#020617_100%)] p-2">
+    <div className="flex h-dvh animate-[hmi-fade-in_280ms_ease-out] flex-col md:flex-row items-stretch justify-center bg-[radial-gradient(ellipse_at_top,_#1e293b_0%,_#0f172a_50%,_#020617_100%)] p-0 md:p-2 overflow-hidden">
       <div
-        className={`relative grid h-full w-full max-w-[1920px] grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-xl border bg-slate-900 shadow-[0_24px_80px_rgba(0,0,0,0.55)] ${
+        className={`relative flex h-full flex-col w-full max-w-[1920px] lg:grid lg:grid-rows-[auto_minmax(0,1fr)] overflow-y-auto overflow-x-hidden lg:overflow-hidden md:rounded-xl border-x-0 border-y md:border bg-slate-900 shadow-[0_24px_80px_rgba(0,0,0,0.55)] ${
           isTrip ? "border-red-500/60 shadow-[0_0_40px_rgba(239,68,68,0.2)]" : "border-slate-600/50"
         }`}
       >
@@ -158,7 +158,7 @@ export function HmiApp({
             pushInfo("Demo: trip reset — unit stopped", "SEQ");
           }}
         />
-        <main className="relative min-h-0 overflow-hidden bg-[#0b1220]">
+        <main className="relative flex flex-col flex-1 min-h-0 bg-[#0b1220] lg:overflow-hidden">
           <MainScreen
             sim={sim}
             history={history}
