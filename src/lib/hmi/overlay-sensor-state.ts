@@ -73,5 +73,18 @@ export function buildOverlaySensorState(tags: HmiTagMap): HmiSensorState {
     fan4103b: resolveMotorRunning(tags.MOT_4103B_RUN),
     fan4017a: resolveMotorRunning(tags.MOT_4017A_RUN),
     fan4017b: resolveMotorRunning(tags.MOT_4017B_RUN),
+    ww_pdt5000: formatWithUnit(tags, "WW_PDT5000", -0.0),
+    ww_pt5001: formatWithUnit(tags, "WW_PT5001", 113.0),
+    ww_lt5042: formatWithUnit(tags, "WW_LT5042", -0.3),
+    ww_te5040a1: formatWithUnit(tags, "WW_TE5040A1", 88.3),
+    ww_pt5041: formatWithUnit(tags, "WW_PT5041", -0.1),
+    ww_sov5032: valveOpen(tags, "WW_SOV5032", false),
+    ww_sov5033: valveOpen(tags, "WW_SOV5033", false),
+    ww_sov5039: valveOpen(tags, "WW_SOV5039", false),
+    ww_mot5035: resolveMotorRunning(tags.WW_MOT5035_RUN),
+    ww_he5044: resolveMotorRunning(tags.WW_HE5044_RUN),
+    ww_he5036: resolveMotorRunning(tags.WW_HE5036_RUN),
+    ww_time_remain: num(tags, "WW_TIME_REMAIN", 0, 0),
+    ww_soak_remain: num(tags, "WW_SOAK_REMAIN", 0, 0),
   };
 }

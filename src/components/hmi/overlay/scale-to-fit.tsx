@@ -10,9 +10,17 @@ type ScaleToFitProps = {
   children: ReactNode;
   className?: string;
   sizeFactor?: number;
+  width?: number;
+  height?: number;
 };
 
-export function ScaleToFit({ children, className, sizeFactor = HMI_OVERLAY_SIZE_FACTOR }: ScaleToFitProps) {
+export function ScaleToFit({ 
+  children, 
+  className, 
+  sizeFactor = HMI_OVERLAY_SIZE_FACTOR,
+  width = HMI_OVERLAY_WIDTH,
+  height = HMI_OVERLAY_HEIGHT
+}: ScaleToFitProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
@@ -21,8 +29,8 @@ export function ScaleToFit({ children, className, sizeFactor = HMI_OVERLAY_SIZE_
     if (!el) return;
 
     const update = () => {
-      const { width, height } = el.getBoundingClientRect();
-      const fit = Math.min(width / HMI_OVERLAY_WIDTH, height / HMI_OVERLAY_HEIGHT);
+      const rect = el.getBoundingClientRect();
+      const fit = Math.min(rect.width / width, rect.height / height);
       setScale(fit * sizeFactor);
     };
 
@@ -30,15 +38,15 @@ export function ScaleToFit({ children, className, sizeFactor = HMI_OVERLAY_SIZE_
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [sizeFactor]);
+  }, [sizeFactor, width, height]);
 
   return (
     <div ref={containerRef} className={className ?? "h-full w-full"}>
       <div
         className="relative mx-auto"
         style={{
-          width: HMI_OVERLAY_WIDTH * scale,
-          height: HMI_OVERLAY_HEIGHT * scale,
+          width: width * scale,
+          height: height * scale,
         }}
       >
         <div
@@ -46,8 +54,8 @@ export function ScaleToFit({ children, className, sizeFactor = HMI_OVERLAY_SIZE_
             position: "absolute",
             top: 0,
             left: 0,
-            width: HMI_OVERLAY_WIDTH,
-            height: HMI_OVERLAY_HEIGHT,
+            width: width,
+            height: height,
             transform: `scale(${scale})`,
             transformOrigin: "top left",
           }}

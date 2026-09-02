@@ -213,13 +213,14 @@ export function createInitialSimulationState(): SimulationState {
       TE0057A1: SENSOR_TAG_LOADED_DEFAULTS.TE_0057,
       XE8009X: NOMINAL.VIB_A,
       XE8009Y: NOMINAL.VIB_B,
-      PT1021A1: NOMINAL.LUBE,
       MOT_4103A_RUN: true,
       MOT_4103B_RUN: true,
       MOT_4017A_RUN: true,
       MOT_4017B_RUN: true,
       NOX_DMD: 0,
       NOX_FB: 0,
+      WW_TIME_REMAIN: 450,
+      WW_SOAK_REMAIN: 120,
     },
   };
 }
@@ -438,6 +439,12 @@ export function stepSimulation(current: SimulationState, deltaMs: number): Simul
     ? live(Number(now.LUBE_OIL_PRESS), NOMINAL.LUBE, 0.2, 0.4)
     : clamp(approach(Number(now.LUBE_OIL_PRESS), 30 + mw * 1.2, 0.15), 15, 70);
 
+  let wwTime = Number(now.WW_TIME_REMAIN ?? 450) - (deltaMs / 1000);
+  if (wwTime <= 0) wwTime = 450;
+  
+  let wwSoak = Number(now.WW_SOAK_REMAIN ?? 120) - (deltaMs / 1000);
+  if (wwSoak <= 0) wwSoak = 120;
+
   return {
     mode,
     modeMs,
@@ -458,6 +465,8 @@ export function stepSimulation(current: SimulationState, deltaMs: number): Simul
       VIB_A: vibA,
       VIB_B: vibB,
       LUBE_OIL_PRESS: lube,
+      WW_TIME_REMAIN: wwTime,
+      WW_SOAK_REMAIN: wwSoak,
       ...jitterSensorTags(now, loaded),
       ...stepPanelAnalogs({ ...now, VIB_A: vibA, VIB_B: vibB, LUBE_OIL_PRESS: lube }, mode, mw, target),
       ...aux,

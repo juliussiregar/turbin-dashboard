@@ -17,6 +17,7 @@ import {
   TrendCard,
 } from "@/components/hmi/dashboard-ui";
 import { HmiOverlay } from "@/components/hmi/overlay";
+import { WaterWashScreen } from "@/components/hmi/water-wash/water-wash-screen";
 import type { HmiAlarm } from "@/lib/hmi/alarms";
 import { buildOverlaySensorState } from "@/lib/hmi/overlay-sensor-state";
 import {
@@ -113,7 +114,12 @@ export function MainScreen({
 
   return (
     <div className="relative flex flex-col lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_136px] gap-2 overflow-visible lg:overflow-hidden p-2">
-      <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-rows-[minmax(0,1fr)_auto_minmax(150px,0.26fr)] gap-2 overflow-visible lg:overflow-hidden">
+      {navActive === "Water Wash" ? (
+        <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
+          <WaterWashScreen sim={sim} />
+        </div>
+      ) : (
+        <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-rows-[minmax(0,1fr)_auto_minmax(150px,0.26fr)] gap-2 overflow-visible lg:overflow-hidden">
         {/* Process image scales to fit cell — always fully visible, no scroll */}
         <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)] gap-2 overflow-visible lg:overflow-hidden">
           <div className="group relative aspect-video min-h-0 min-w-0 overflow-hidden rounded-md border border-slate-700/70 bg-black lg:aspect-auto">
@@ -273,7 +279,8 @@ export function MainScreen({
             </div>
           </Panel>
         </div>
-      </div>
+        </div>
+      )}
 
       <aside className="flex flex-col md:min-h-0 overflow-hidden rounded-md border border-teal-500/35 bg-gradient-to-b from-[#0d3d42] via-[#0a2a30] to-[#071018] p-1.5">
         <div className="mb-1.5 grid shrink-0 grid-cols-2 gap-0.5">

@@ -41,4 +41,11 @@ export const SENSOR_TAG_LOADED_DEFAULTS: Record<string, number> = {
   TE_0080: 180.1,
   TE_0081: 171.9,
   TE_0082: 167.8,
+
+  // Water Wash specific
+  WW_PDT5000: -0.0,
+  WW_PT5001: 113.0,
+  WW_LT5042: -0.3,
+  WW_TE5040A1: 88.3,
+  WW_PT5041: -0.1,
 };

@@ -48,4 +48,19 @@ export type HmiSensorState = {
   fan4103b: boolean;
   fan4017a: boolean;
   fan4017b: boolean;
+
+  // Water Wash specific tags
+  ww_pdt5000: HmiOverlayDisplayValue;
+  ww_pt5001: HmiOverlayDisplayValue;
+  ww_lt5042: HmiOverlayDisplayValue;
+  ww_te5040a1: HmiOverlayDisplayValue;
+  ww_pt5041: HmiOverlayDisplayValue;
+  ww_sov5032: boolean;
+  ww_sov5033: boolean;
+  ww_sov5039: boolean;
+  ww_mot5035: boolean;
+  ww_he5044: boolean;
+  ww_he5036: boolean;
+  ww_time_remain: HmiOverlayDisplayValue;
+  ww_soak_remain: HmiOverlayDisplayValue;
 };
