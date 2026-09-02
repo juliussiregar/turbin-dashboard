@@ -18,6 +18,7 @@ import {
 } from "@/components/hmi/dashboard-ui";
 import { HmiOverlay } from "@/components/hmi/overlay";
 import { WaterWashScreen } from "@/components/hmi/water-wash/water-wash-screen";
+import { WaterInjNoxScreen } from "@/components/hmi/water-inj-nox/water-inj-nox-screen";
 import type { HmiAlarm } from "@/lib/hmi/alarms";
 import { buildOverlaySensorState } from "@/lib/hmi/overlay-sensor-state";
 import {
@@ -115,8 +116,26 @@ export function MainScreen({
   return (
     <div className="relative flex flex-col lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_136px] gap-2 overflow-visible lg:overflow-hidden p-2">
       {navActive === "Water Wash" ? (
-        <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
+        <div className="relative flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
           <WaterWashScreen sim={sim} />
+          <button
+            type="button"
+            onClick={() => setOverlayExpanded(true)}
+            className="absolute right-3 top-3 z-10 rounded bg-black/60 px-2.5 py-1.5 text-[10px] font-bold tracking-wide text-cyan-200 opacity-90 backdrop-blur-sm transition hover:bg-black/80 hover:text-cyan-100 lg:hidden"
+          >
+            🔍 VIEW DIAGRAM
+          </button>
+        </div>
+      ) : navActive === "Water Inj (Nox)" ? (
+        <div className="relative flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
+          <WaterInjNoxScreen sim={sim} />
+          <button
+            type="button"
+            onClick={() => setOverlayExpanded(true)}
+            className="absolute right-3 top-3 z-10 rounded bg-black/60 px-2.5 py-1.5 text-[10px] font-bold tracking-wide text-cyan-200 opacity-90 backdrop-blur-sm transition hover:bg-black/80 hover:text-cyan-100 lg:hidden"
+          >
+            🔍 VIEW DIAGRAM
+          </button>
         </div>
       ) : (
         <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-rows-[minmax(0,1fr)_auto_minmax(150px,0.26fr)] gap-2 overflow-visible lg:overflow-hidden">
@@ -374,7 +393,13 @@ export function MainScreen({
                   transform: `translate(-50%, -50%) rotate(${rotated ? 90 : 0}deg)`,
                 }}
               >
-                <HmiOverlay s={overlayState} showScaleControl={false} />
+                {navActive === "Water Wash" ? (
+                  <WaterWashScreen sim={sim} />
+                ) : navActive === "Water Inj (Nox)" ? (
+                  <WaterInjNoxScreen sim={sim} />
+                ) : (
+                  <HmiOverlay s={overlayState} showScaleControl={false} />
+                )}
               </div>
             </div>
           </div>

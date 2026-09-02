@@ -63,4 +63,21 @@ export type HmiSensorState = {
   ww_he5036: boolean;
   ww_time_remain: HmiOverlayDisplayValue;
   ww_soak_remain: HmiOverlayDisplayValue;
+
+  // Water Inj Nox specific tags
+  nox_val1: HmiOverlayDisplayValue;
+  nox_val2: HmiOverlayDisplayValue;
+  nox_water_status: boolean;
+  nox_val6: HmiOverlayDisplayValue;
+  nox_val7: HmiOverlayDisplayValue;
+  nox_val8: HmiOverlayDisplayValue;
+  nox_val9: HmiOverlayDisplayValue;
+  nox_val10: HmiOverlayDisplayValue;
+  nox_val11: HmiOverlayDisplayValue;
+  nox_val12: HmiOverlayDisplayValue;
+  nox_val13: HmiOverlayDisplayValue;
+  nox_val14: HmiOverlayDisplayValue;
+  nox_val15: HmiOverlayDisplayValue;
+  nox_val16: HmiOverlayDisplayValue;
+  nox_val17: HmiOverlayDisplayValue;
 };

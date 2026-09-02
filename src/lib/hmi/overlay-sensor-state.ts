@@ -86,5 +86,22 @@ export function buildOverlaySensorState(tags: HmiTagMap): HmiSensorState {
     ww_he5036: resolveMotorRunning(tags.WW_HE5036_RUN),
     ww_time_remain: num(tags, "WW_TIME_REMAIN", 0, 0),
     ww_soak_remain: num(tags, "WW_SOAK_REMAIN", 0, 0),
+
+    // Water Inj Nox dummy mapping
+    nox_val1: formatWithUnit(tags, "NOX_VAL1", 0),
+    nox_val2: formatWithUnit(tags, "NOX_VAL2", 0),
+    nox_water_status: String(tags.NOX_WATER_STATUS) === "Active",
+    nox_val6: formatWithUnit(tags, "NOX_VAL6", 0),
+    nox_val7: formatWithUnit(tags, "NOX_VAL7", 0),
+    nox_val8: formatWithUnit(tags, "NOX_VAL8", 0),
+    nox_val9: formatWithUnit(tags, "NOX_VAL9", 0),
+    nox_val10: formatWithUnit(tags, "NOX_VAL10", 0),
+    nox_val11: formatWithUnit(tags, "NOX_VAL11", 0),
+    nox_val12: formatWithUnit(tags, "NOX_VAL12", 0),
+    nox_val13: formatWithUnit(tags, "NOX_VAL13", 0),
+    nox_val14: formatWithUnit(tags, "NOX_VAL14", 0),
+    nox_val15: formatWithUnit(tags, "NOX_VAL15", 0),
+    nox_val16: formatWithUnit(tags, "NOX_VAL16", 0),
+    nox_val17: formatWithUnit(tags, "NOX_VAL17", 0),
   };
 }
