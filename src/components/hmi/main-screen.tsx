@@ -18,7 +18,11 @@ import {
 } from "@/components/hmi/dashboard-ui";
 import { HmiOverlay } from "@/components/hmi/overlay";
 import { WaterWashScreen } from "@/components/hmi/water-wash/water-wash-screen";
+import { WaterWashOverlay } from "@/components/hmi/water-wash/water-wash-overlay";
 import { WaterInjNoxScreen } from "@/components/hmi/water-inj-nox/water-inj-nox-screen";
+import { WaterInjNoxOverlay } from "@/components/hmi/water-inj-nox/water-inj-nox-overlay";
+import { VibrationMonitoringScreen } from "@/components/hmi/vibration/vibration-monitoring-screen";
+import { VibrationMonitoringOverlay } from "@/components/hmi/vibration/vibration-monitoring-overlay";
 import type { HmiAlarm } from "@/lib/hmi/alarms";
 import { buildOverlaySensorState } from "@/lib/hmi/overlay-sensor-state";
 import {
@@ -129,6 +133,17 @@ export function MainScreen({
       ) : navActive === "Water Inj (Nox)" ? (
         <div className="relative flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
           <WaterInjNoxScreen sim={sim} />
+          <button
+            type="button"
+            onClick={() => setOverlayExpanded(true)}
+            className="absolute right-3 top-3 z-10 rounded bg-black/60 px-2.5 py-1.5 text-[10px] font-bold tracking-wide text-cyan-200 opacity-90 backdrop-blur-sm transition hover:bg-black/80 hover:text-cyan-100 lg:hidden"
+          >
+            🔍 VIEW DIAGRAM
+          </button>
+        </div>
+      ) : navActive === "Vibration Monitoring" ? (
+        <div className="relative flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
+          <VibrationMonitoringScreen sim={sim} />
           <button
             type="button"
             onClick={() => setOverlayExpanded(true)}
@@ -336,7 +351,15 @@ export function MainScreen({
       {overlayExpanded && (
         <div className="fixed inset-0 z-50 flex flex-col bg-slate-950 lg:hidden">
           <div className="flex shrink-0 items-center justify-between border-b border-slate-800 bg-slate-900 px-4 py-3 shadow-md">
-            <div className="text-[11px] font-bold tracking-widest text-cyan-400">TURBINE DIAGRAM</div>
+            <div className="text-[11px] font-bold tracking-widest text-cyan-400">
+              {navActive === "Water Wash"
+                ? "WATER WASH DIAGRAM"
+                : navActive === "Water Inj (Nox)"
+                ? "WATER INJECTION (NOX) DIAGRAM"
+                : navActive === "Vibration Monitoring"
+                ? "VIBRATION MONITORING DIAGRAM"
+                : "TURBINE DIAGRAM"}
+            </div>
             <button
               type="button"
               onClick={() => {
@@ -394,9 +417,11 @@ export function MainScreen({
                 }}
               >
                 {navActive === "Water Wash" ? (
-                  <WaterWashScreen sim={sim} />
+                  <WaterWashOverlay s={overlayState} />
                 ) : navActive === "Water Inj (Nox)" ? (
-                  <WaterInjNoxScreen sim={sim} />
+                  <WaterInjNoxOverlay s={overlayState} />
+                ) : navActive === "Vibration Monitoring" ? (
+                  <VibrationMonitoringOverlay s={overlayState} />
                 ) : (
                   <HmiOverlay s={overlayState} showScaleControl={false} />
                 )}

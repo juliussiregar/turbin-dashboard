@@ -80,4 +80,49 @@ export type HmiSensorState = {
   nox_val15: HmiOverlayDisplayValue;
   nox_val16: HmiOverlayDisplayValue;
   nox_val17: HmiOverlayDisplayValue;
+
+  // Vibration Monitoring specific tags
+  vib_top1: HmiOverlayDisplayValue;
+  vib_top2: HmiOverlayDisplayValue;
+  vib_top3: HmiOverlayDisplayValue;
+  vib_top4: HmiOverlayDisplayValue;
+  vib_top5: HmiOverlayDisplayValue;
+  vib_top6: HmiOverlayDisplayValue;
+  vib_top7: HmiOverlayDisplayValue;
+  vib_top8: HmiOverlayDisplayValue;
+  vib_top9: HmiOverlayDisplayValue;
+  vib_top10: HmiOverlayDisplayValue;
+  vib_top11: HmiOverlayDisplayValue;
+  vib_top12: HmiOverlayDisplayValue;
+  vib_top13: HmiOverlayDisplayValue;
+  vib_top14: HmiOverlayDisplayValue;
+  vib_top15: HmiOverlayDisplayValue;
+  vib_top16: HmiOverlayDisplayValue;
+  vib_top17: HmiOverlayDisplayValue;
+
+  vib_ch1: HmiOverlayDisplayValue;
+  vib_ch2: HmiOverlayDisplayValue;
+  vib_ch3: HmiOverlayDisplayValue;
+  vib_ch4: HmiOverlayDisplayValue;
+  vib_ch5: HmiOverlayDisplayValue;
+  vib_ch6: HmiOverlayDisplayValue;
+  vib_ch7: HmiOverlayDisplayValue;
+  vib_ch8: HmiOverlayDisplayValue;
+  vib_ch9: HmiOverlayDisplayValue;
+  vib_ch10: HmiOverlayDisplayValue;
+  vib_ch11: HmiOverlayDisplayValue;
+  vib_ch12: HmiOverlayDisplayValue;
+
+  vib_bar1: number;
+  vib_bar2: number;
+  vib_bar3: number;
+  vib_bar4: number;
+  vib_bar5: number;
+  vib_bar6: number;
+  vib_bar7: number;
+  vib_bar8: number;
+  vib_bar9: number;
+  vib_bar10: number;
+  vib_bar11: number;
+  vib_bar12: number;
 };

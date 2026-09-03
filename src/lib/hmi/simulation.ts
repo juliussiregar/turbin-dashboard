@@ -229,7 +229,14 @@ function jitterSensorTags(tags: HmiTagMap, loaded: boolean): Partial<HmiTagMap> 
   const next: Partial<HmiTagMap> = {};
   for (const [tagId, base] of Object.entries(SENSOR_TAG_LOADED_DEFAULTS)) {
     const current = Number(tags[tagId] ?? base);
-    if (loaded) {
+    if (tagId.startsWith("VIB_CH")) {
+      next[tagId] = clamp(live(current, base, 0.015, 0.4), 0.05, 1.8);
+    } else if (tagId.startsWith("VIB_")) {
+      next[tagId] = clamp(live(current, base, 0.1, 0.4), base - 1.0, base + 1.0);
+    } else if (tagId.startsWith("WW_") || tagId.startsWith("NOX_")) {
+      const noise = tagId.includes("PT") || tagId.includes("PDT") || tagId.includes("LT") ? 0.12 : 0.25;
+      next[tagId] = clamp(live(current, base, noise, 0.4), base - 1.5, base + 1.5);
+    } else if (loaded) {
       // Stay near sample-screen values (±0.4 °F / ±0.15 psig)
       const noise = tagId.startsWith("PT_") ? 0.12 : 0.35;
       next[tagId] = clamp(live(current, base, noise, 0.4), base - 1.5, base + 1.5);
