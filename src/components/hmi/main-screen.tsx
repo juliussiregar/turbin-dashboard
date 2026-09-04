@@ -12,6 +12,11 @@ import { MloSkidScreen } from "@/components/hmi/screens/mlo-skid-screen";
 import { SkidEnclosureScreen } from "@/components/hmi/screens/skid-enclosure-screen";
 import { SprintScreen } from "@/components/hmi/screens/sprint-screen";
 import { TurbineLubeOilScreen } from "@/components/hmi/screens/turbine-lube-oil-screen";
+import { TurbineOverviewScreen } from "@/components/hmi/screens/turbine-overview-screen";
+import { VentilationScreen } from "@/components/hmi/screens/ventilation-screen";
+import { VibrationMonitoringScreen } from "@/components/hmi/screens/vibration-monitoring-screen";
+import { WaterInjNoxScreen } from "@/components/hmi/screens/water-inj-nox-screen";
+import { WaterWashScreen } from "@/components/hmi/screens/water-wash-screen";
 import {
   ActionButton,
   AlarmListPanel,
@@ -26,12 +31,6 @@ import {
   TrendCard,
 } from "@/components/hmi/dashboard-ui";
 import { HmiOverlay } from "@/components/hmi/overlay";
-import { WaterWashScreen } from "@/components/hmi/water-wash/water-wash-screen";
-import { WaterWashOverlay } from "@/components/hmi/water-wash/water-wash-overlay";
-import { WaterInjNoxScreen } from "@/components/hmi/water-inj-nox/water-inj-nox-screen";
-import { WaterInjNoxOverlay } from "@/components/hmi/water-inj-nox/water-inj-nox-overlay";
-import { VibrationMonitoringScreen } from "@/components/hmi/vibration/vibration-monitoring-screen";
-import { VibrationMonitoringOverlay } from "@/components/hmi/vibration/vibration-monitoring-overlay";
 import type { HmiAlarm } from "@/lib/hmi/alarms";
 import { buildOverlaySensorState } from "@/lib/hmi/overlay-sensor-state";
 import {
@@ -61,6 +60,11 @@ const MAPPED_SCREENS: Record<string, { title: string; Component: MappedScreenCom
   "Skid Enclosure": { title: "SKID ENCLOSURE", Component: SkidEnclosureScreen },
   Sprint: { title: "SPRINT", Component: SprintScreen },
   "Turbine Lube Oil": { title: "TURBINE LUBE OIL", Component: TurbineLubeOilScreen },
+  "Turbine Overview": { title: "TURBINE OVERVIEW", Component: TurbineOverviewScreen },
+  Ventilation: { title: "TURBINE VENTILATION", Component: VentilationScreen },
+  "Vibration Monitoring": { title: "VIBRATION MONITORING", Component: VibrationMonitoringScreen },
+  "Water Inj (Nox)": { title: "WATER INJECTION (NOX)", Component: WaterInjNoxScreen },
+  "Water Wash": { title: "WATER WASH", Component: WaterWashScreen },
 };
 
 function LiveTable({ tags, rows }: { tags: HmiTagMap; rows: PanelRowSpec[] }) {
@@ -145,41 +149,7 @@ export function MainScreen({
   }
   return (
     <div className="relative flex flex-col lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_136px] gap-2 overflow-visible lg:overflow-hidden p-2">
-      {navActive === "Water Wash" ? (
-        <div className="relative flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
-          <WaterWashScreen sim={sim} />
-          <button
-            type="button"
-            onClick={() => setOverlayExpanded(true)}
-            className="absolute right-3 top-3 z-10 rounded bg-black/60 px-2.5 py-1.5 text-[10px] font-bold tracking-wide text-cyan-200 opacity-90 backdrop-blur-sm transition hover:bg-black/80 hover:text-cyan-100 lg:hidden"
-          >
-            🔍 VIEW DIAGRAM
-          </button>
-        </div>
-      ) : navActive === "Water Inj (Nox)" ? (
-        <div className="relative flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
-          <WaterInjNoxScreen sim={sim} />
-          <button
-            type="button"
-            onClick={() => setOverlayExpanded(true)}
-            className="absolute right-3 top-3 z-10 rounded bg-black/60 px-2.5 py-1.5 text-[10px] font-bold tracking-wide text-cyan-200 opacity-90 backdrop-blur-sm transition hover:bg-black/80 hover:text-cyan-100 lg:hidden"
-          >
-            🔍 VIEW DIAGRAM
-          </button>
-        </div>
-      ) : navActive === "Vibration Monitoring" ? (
-        <div className="relative flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
-          <VibrationMonitoringScreen sim={sim} />
-          <button
-            type="button"
-            onClick={() => setOverlayExpanded(true)}
-            className="absolute right-3 top-3 z-10 rounded bg-black/60 px-2.5 py-1.5 text-[10px] font-bold tracking-wide text-cyan-200 opacity-90 backdrop-blur-sm transition hover:bg-black/80 hover:text-cyan-100 lg:hidden"
-          >
-            🔍 VIEW DIAGRAM
-          </button>
-        </div>
-      ) : (
-        <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-rows-[minmax(0,1fr)_auto_minmax(150px,0.26fr)] gap-2 overflow-visible lg:overflow-hidden">
+      <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-rows-[minmax(0,1fr)_auto_minmax(150px,0.26fr)] gap-2 overflow-visible lg:overflow-hidden">
         {/* Process image scales to fit cell — always fully visible, no scroll */}
         <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)] gap-2 overflow-visible lg:overflow-hidden">
           <div className="group relative aspect-video min-h-0 min-w-0 overflow-hidden rounded-md border border-slate-700/70 bg-black lg:aspect-auto">
@@ -339,8 +309,7 @@ export function MainScreen({
             </div>
           </Panel>
         </div>
-        </div>
-      )}
+      </div>
 
       <HmiScreenMenu
         title="MAIN SCREEN"
@@ -357,15 +326,7 @@ export function MainScreen({
       {overlayExpanded && (
         <div className="fixed inset-0 z-50 flex flex-col bg-slate-950 lg:hidden">
           <div className="flex shrink-0 items-center justify-between border-b border-slate-800 bg-slate-900 px-4 py-3 shadow-md">
-            <div className="text-[11px] font-bold tracking-widest text-cyan-400">
-              {navActive === "Water Wash"
-                ? "WATER WASH DIAGRAM"
-                : navActive === "Water Inj (Nox)"
-                ? "WATER INJECTION (NOX) DIAGRAM"
-                : navActive === "Vibration Monitoring"
-                ? "VIBRATION MONITORING DIAGRAM"
-                : "TURBINE DIAGRAM"}
-            </div>
+            <div className="text-[11px] font-bold tracking-widest text-cyan-400">TURBINE DIAGRAM</div>
             <button
               type="button"
               onClick={() => {
@@ -422,15 +383,7 @@ export function MainScreen({
                   transform: `translate(-50%, -50%) rotate(${rotated ? 90 : 0}deg)`,
                 }}
               >
-                {navActive === "Water Wash" ? (
-                  <WaterWashOverlay s={overlayState} />
-                ) : navActive === "Water Inj (Nox)" ? (
-                  <WaterInjNoxOverlay s={overlayState} />
-                ) : navActive === "Vibration Monitoring" ? (
-                  <VibrationMonitoringOverlay s={overlayState} />
-                ) : (
-                  <HmiOverlay s={overlayState} showScaleControl={false} />
-                )}
+                <HmiOverlay s={overlayState} showScaleControl={false} />
               </div>
             </div>
           </div>
