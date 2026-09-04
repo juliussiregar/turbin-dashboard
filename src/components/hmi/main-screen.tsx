@@ -1,7 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ComponentType } from "react";
+import { HmiScreenMenu } from "@/components/hmi/hmi-screen-menu";
+import { FireProtectionScreen } from "@/components/hmi/screens/fire-protection-screen";
+import { FuelGasScreen } from "@/components/hmi/screens/fuel-gas-screen";
+import { FuelSystemScreen } from "@/components/hmi/screens/fuel-system-screen";
+import { HydStarterScreen } from "@/components/hmi/screens/hyd-starter-screen";
+import { MloGbGenScreen } from "@/components/hmi/screens/mlo-gb-gen-screen";
+import { MloSkidScreen } from "@/components/hmi/screens/mlo-skid-screen";
+import { SkidEnclosureScreen } from "@/components/hmi/screens/skid-enclosure-screen";
+import { SprintScreen } from "@/components/hmi/screens/sprint-screen";
+import { TurbineLubeOilScreen } from "@/components/hmi/screens/turbine-lube-oil-screen";
 import {
   ActionButton,
   AlarmListPanel,
@@ -11,7 +21,6 @@ import {
   fmt,
   KpiChip,
   LiveDataLine,
-  NavButton,
   Panel,
   StatusLamp,
   TrendCard,
@@ -34,23 +43,19 @@ import type { TagHistory } from "@/lib/hmi/tag-history";
 import { getTagDefinition } from "@/lib/hmi/tag-registry";
 import type { HmiTagMap } from "@/lib/hmi/types";
 
-const NAV_ITEMS = [
-  "Previous Screen",
-  "Fire Protection",
-  "Fuel GAS",
-  "Fuel System",
-  "Hyd Starter",
-  "MLO Skid",
-  "MLO GB/Gen",
-  "Skid Enclosure",
-  "Sprint",
-  "Turbine Lube Oil",
-  "Turbine Overview",
-  "Ventilation",
-  "Vibration Monitoring",
-  "Water Inj (Nox)",
-  "Water Wash",
-];
+type MappedScreenComponent = ComponentType<{ sim: SimulationState }>;
+
+const MAPPED_SCREENS: Record<string, { title: string; Component: MappedScreenComponent }> = {
+  "Fire Protection": { title: "FIRE PROTECTION", Component: FireProtectionScreen },
+  "Fuel GAS": { title: "FUEL GAS", Component: FuelGasScreen },
+  "Fuel System": { title: "FUEL SYSTEM", Component: FuelSystemScreen },
+  "Hyd Starter": { title: "HYD STARTER", Component: HydStarterScreen },
+  "MLO Skid": { title: "MLO SKID", Component: MloSkidScreen },
+  "MLO GB/Gen": { title: "MLO GB/GEN", Component: MloGbGenScreen },
+  "Skid Enclosure": { title: "SKID ENCLOSURE", Component: SkidEnclosureScreen },
+  Sprint: { title: "SPRINT", Component: SprintScreen },
+  "Turbine Lube Oil": { title: "TURBINE LUBE OIL", Component: TurbineLubeOilScreen },
+};
 
 function LiveTable({ tags, rows }: { tags: HmiTagMap; rows: PanelRowSpec[] }) {
   return (
@@ -111,6 +116,27 @@ export function MainScreen({
   const [zoom, setZoom] = useState(1);
   const [rotated, setRotated] = useState(false);
 
+  const mappedScreen = MAPPED_SCREENS[navActive];
+  if (mappedScreen) {
+    const ScreenComponent = mappedScreen.Component;
+    return (
+      <div className="relative flex flex-col lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_136px] gap-2 overflow-hidden p-2">
+        <div className="min-h-0 h-full overflow-hidden">
+          <ScreenComponent sim={sim} />
+        </div>
+        <HmiScreenMenu
+          title={mappedScreen.title}
+          activeItem={navActive}
+          isTrip={isTrip}
+          onSelect={onNavSelect}
+          onAlarmListToggle={onAlarmListToggle}
+          onAck={onAck}
+          onTripReset={onTripReset}
+        />
+        <AlarmListPanel alarms={alarms} open={alarmListOpen} onClose={onAlarmListClose} />
+      </div>
+    );
+  }
   return (
     <div className="relative flex flex-col lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_136px] gap-2 overflow-visible lg:overflow-hidden p-2">
       <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-rows-[minmax(0,1fr)_auto_minmax(150px,0.26fr)] gap-2 overflow-visible lg:overflow-hidden">
@@ -275,35 +301,15 @@ export function MainScreen({
         </div>
       </div>
 
-      <aside className="flex flex-col md:min-h-0 overflow-hidden rounded-md border border-teal-500/35 bg-gradient-to-b from-[#0d3d42] via-[#0a2a30] to-[#071018] p-1.5">
-        <div className="mb-1.5 grid shrink-0 grid-cols-2 gap-0.5">
-          {["CONTROL", "SYSTEMS", "MISC", "VG CAL"].map((tab, i) => (
-            <button
-              key={tab}
-              type="button"
-              className={`rounded px-0.5 py-0.5 text-[7px] font-bold ${
-                i === 0 ? "bg-cyan-500/25 text-cyan-100" : "bg-slate-800/50 text-slate-400"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-        <div className="mb-1.5 shrink-0 rounded border border-cyan-400/30 bg-cyan-500/10 py-1 text-center text-[9px] font-bold text-cyan-100">
-          MAIN SCREEN
-        </div>
-        <div className="grid min-h-0 flex-1 grid-cols-2 sm:grid-cols-3 md:grid-cols-1 md:grid-rows-[repeat(15,minmax(0,1fr))] gap-1 md:gap-0.5 overflow-visible md:overflow-hidden">
-          {NAV_ITEMS.map((item) => (
-            <NavButton key={item} label={item} active={navActive === item} onClick={() => onNavSelect(item)} />
-          ))}
-        </div>
-        <div className="mt-1.5 grid shrink-0 grid-cols-2 gap-0.5 border-t border-teal-500/20 pt-1.5">
-          <ActionButton label="PRINT" variant="ghost" />
-          <ActionButton label="Alarms" variant="ghost" onClick={onAlarmListToggle} />
-          <ActionButton label="Ack" variant="ghost" onClick={onAck} />
-          <ActionButton label="Reset" onClick={onTripReset} variant="danger" emphasize={isTrip} />
-        </div>
-      </aside>
+      <HmiScreenMenu
+        title="MAIN SCREEN"
+        activeItem={navActive}
+        isTrip={isTrip}
+        onSelect={onNavSelect}
+        onAlarmListToggle={onAlarmListToggle}
+        onAck={onAck}
+        onTripReset={onTripReset}
+      />
 
       <AlarmListPanel alarms={alarms} open={alarmListOpen} onClose={onAlarmListClose} />
 
