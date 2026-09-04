@@ -17,6 +17,12 @@ import {
   TrendCard,
 } from "@/components/hmi/dashboard-ui";
 import { HmiOverlay } from "@/components/hmi/overlay";
+import { WaterWashScreen } from "@/components/hmi/water-wash/water-wash-screen";
+import { WaterWashOverlay } from "@/components/hmi/water-wash/water-wash-overlay";
+import { WaterInjNoxScreen } from "@/components/hmi/water-inj-nox/water-inj-nox-screen";
+import { WaterInjNoxOverlay } from "@/components/hmi/water-inj-nox/water-inj-nox-overlay";
+import { VibrationMonitoringScreen } from "@/components/hmi/vibration/vibration-monitoring-screen";
+import { VibrationMonitoringOverlay } from "@/components/hmi/vibration/vibration-monitoring-overlay";
 import type { HmiAlarm } from "@/lib/hmi/alarms";
 import { buildOverlaySensorState } from "@/lib/hmi/overlay-sensor-state";
 import {
@@ -113,7 +119,41 @@ export function MainScreen({
 
   return (
     <div className="relative flex flex-col lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_136px] gap-2 overflow-visible lg:overflow-hidden p-2">
-      <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-rows-[minmax(0,1fr)_auto_minmax(150px,0.26fr)] gap-2 overflow-visible lg:overflow-hidden">
+      {navActive === "Water Wash" ? (
+        <div className="relative flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
+          <WaterWashScreen sim={sim} />
+          <button
+            type="button"
+            onClick={() => setOverlayExpanded(true)}
+            className="absolute right-3 top-3 z-10 rounded bg-black/60 px-2.5 py-1.5 text-[10px] font-bold tracking-wide text-cyan-200 opacity-90 backdrop-blur-sm transition hover:bg-black/80 hover:text-cyan-100 lg:hidden"
+          >
+            🔍 VIEW DIAGRAM
+          </button>
+        </div>
+      ) : navActive === "Water Inj (Nox)" ? (
+        <div className="relative flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
+          <WaterInjNoxScreen sim={sim} />
+          <button
+            type="button"
+            onClick={() => setOverlayExpanded(true)}
+            className="absolute right-3 top-3 z-10 rounded bg-black/60 px-2.5 py-1.5 text-[10px] font-bold tracking-wide text-cyan-200 opacity-90 backdrop-blur-sm transition hover:bg-black/80 hover:text-cyan-100 lg:hidden"
+          >
+            🔍 VIEW DIAGRAM
+          </button>
+        </div>
+      ) : navActive === "Vibration Monitoring" ? (
+        <div className="relative flex flex-col lg:grid lg:min-h-0 lg:grid-rows-1 gap-2 overflow-visible lg:overflow-hidden">
+          <VibrationMonitoringScreen sim={sim} />
+          <button
+            type="button"
+            onClick={() => setOverlayExpanded(true)}
+            className="absolute right-3 top-3 z-10 rounded bg-black/60 px-2.5 py-1.5 text-[10px] font-bold tracking-wide text-cyan-200 opacity-90 backdrop-blur-sm transition hover:bg-black/80 hover:text-cyan-100 lg:hidden"
+          >
+            🔍 VIEW DIAGRAM
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-rows-[minmax(0,1fr)_auto_minmax(150px,0.26fr)] gap-2 overflow-visible lg:overflow-hidden">
         {/* Process image scales to fit cell — always fully visible, no scroll */}
         <div className="flex flex-col lg:grid lg:min-h-0 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)] gap-2 overflow-visible lg:overflow-hidden">
           <div className="group relative aspect-video min-h-0 min-w-0 overflow-hidden rounded-md border border-slate-700/70 bg-black lg:aspect-auto">
@@ -273,7 +313,8 @@ export function MainScreen({
             </div>
           </Panel>
         </div>
-      </div>
+        </div>
+      )}
 
       <aside className="flex flex-col md:min-h-0 overflow-hidden rounded-md border border-teal-500/35 bg-gradient-to-b from-[#0d3d42] via-[#0a2a30] to-[#071018] p-1.5">
         <div className="mb-1.5 grid shrink-0 grid-cols-2 gap-0.5">
@@ -310,7 +351,15 @@ export function MainScreen({
       {overlayExpanded && (
         <div className="fixed inset-0 z-50 flex flex-col bg-slate-950 lg:hidden">
           <div className="flex shrink-0 items-center justify-between border-b border-slate-800 bg-slate-900 px-4 py-3 shadow-md">
-            <div className="text-[11px] font-bold tracking-widest text-cyan-400">TURBINE DIAGRAM</div>
+            <div className="text-[11px] font-bold tracking-widest text-cyan-400">
+              {navActive === "Water Wash"
+                ? "WATER WASH DIAGRAM"
+                : navActive === "Water Inj (Nox)"
+                ? "WATER INJECTION (NOX) DIAGRAM"
+                : navActive === "Vibration Monitoring"
+                ? "VIBRATION MONITORING DIAGRAM"
+                : "TURBINE DIAGRAM"}
+            </div>
             <button
               type="button"
               onClick={() => {
@@ -367,7 +416,15 @@ export function MainScreen({
                   transform: `translate(-50%, -50%) rotate(${rotated ? 90 : 0}deg)`,
                 }}
               >
-                <HmiOverlay s={overlayState} showScaleControl={false} />
+                {navActive === "Water Wash" ? (
+                  <WaterWashOverlay s={overlayState} />
+                ) : navActive === "Water Inj (Nox)" ? (
+                  <WaterInjNoxOverlay s={overlayState} />
+                ) : navActive === "Vibration Monitoring" ? (
+                  <VibrationMonitoringOverlay s={overlayState} />
+                ) : (
+                  <HmiOverlay s={overlayState} showScaleControl={false} />
+                )}
               </div>
             </div>
           </div>
