@@ -294,6 +294,12 @@ export function HomeDashboard() {
           <div className="flex flex-col items-center gap-2 md:items-end">
             <div className="flex flex-wrap justify-center gap-2 md:justify-end">
               <Link
+                href="/dashboard"
+                className="rounded border border-white/15 bg-white/5 px-2.5 py-1.5 text-[11px] font-semibold text-slate-200 transition hover:border-blue-300/40 hover:bg-blue-400/10 hover:text-blue-100"
+              >
+                Dashboards →
+              </Link>
+              <Link
                 href="/trending"
                 className="rounded border border-white/15 bg-white/5 px-2.5 py-1.5 text-[11px] font-semibold text-slate-200 transition hover:border-lime-300/40 hover:bg-lime-400/10 hover:text-lime-100"
               >
