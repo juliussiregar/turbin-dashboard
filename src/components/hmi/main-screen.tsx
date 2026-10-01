@@ -130,8 +130,8 @@ export function MainScreen({
   if (mappedScreen) {
     const ScreenComponent = mappedScreen.Component;
     return (
-      <div className="relative flex flex-col lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_136px] gap-2 overflow-hidden p-2">
-        <div className="min-h-0 h-full overflow-hidden">
+      <div className="relative flex flex-col gap-2 overflow-visible p-2 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_136px] lg:overflow-hidden">
+        <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-md border border-slate-700/70 bg-black lg:h-full lg:min-h-0 lg:aspect-auto lg:rounded-none lg:border-0">
           <ScreenComponent sim={sim} />
         </div>
         <HmiScreenMenu

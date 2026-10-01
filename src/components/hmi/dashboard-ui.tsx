@@ -353,7 +353,7 @@ export function NavButton({ label, active, onClick }: { label: string; active?: 
     <button
       type="button"
       onClick={onClick}
-      className={`w-full truncate rounded border px-1.5 py-0.5 text-left text-[9px] font-semibold transition ${
+      className={`w-full truncate rounded border px-1.5 py-0.5 text-left text-xs cursor-pointer font-semibold transition ${
         active
           ? "border-cyan-400/50 bg-cyan-500/20 text-cyan-100"
           : "border-slate-600/50 bg-slate-800/70 text-slate-200 hover:border-cyan-500/30 hover:bg-slate-700/80"

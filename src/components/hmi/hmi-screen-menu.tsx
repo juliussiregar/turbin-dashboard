@@ -42,7 +42,7 @@ export function HmiScreenMenu({
   onTripReset,
 }: HmiScreenMenuProps) {
   return (
-    <aside className="flex flex-col md:min-h-0 overflow-hidden rounded-md border border-teal-500/35 bg-gradient-to-b from-[#0d3d42] via-[#0a2a30] to-[#071018] p-1.5">
+    <aside className="flex flex-col overflow-visible rounded-md border border-teal-500/35 bg-gradient-to-b from-[#0d3d42] via-[#0a2a30] to-[#071018] p-1.5 lg:min-h-0 lg:overflow-hidden">
       <div className="mb-1.5 grid shrink-0 grid-cols-2 gap-0.5">
         {MENU_TABS.map((tab, index) => (
           <button
@@ -61,7 +61,7 @@ export function HmiScreenMenu({
         {title}
       </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-2 sm:grid-cols-3 md:grid-cols-1 md:grid-rows-[repeat(15,minmax(0,1fr))] gap-1 md:gap-0.5 overflow-visible md:overflow-hidden">
+      <div className="grid grid-cols-2 gap-1 overflow-visible sm:grid-cols-3 lg:min-h-0 lg:flex-1 lg:grid-cols-1 lg:grid-rows-[repeat(15,minmax(0,1fr))] lg:gap-0.5 lg:overflow-hidden">
         {HMI_SCREEN_MENU_ITEMS.map((item) => (
           <NavButton key={item} label={item} active={activeItem === item} onClick={() => onSelect(item)} />
         ))}
